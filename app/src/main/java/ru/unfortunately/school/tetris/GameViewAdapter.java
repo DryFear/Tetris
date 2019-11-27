@@ -17,14 +17,10 @@ import java.util.Random;
 public class GameViewAdapter{
 
     private static final String TAG = "GameViewLogCatTag";
-
-
-    /**
-    *
-    *
-    */
     private GameView mGameView;
 
+    public static final int FLAG_MOVE_TO_LEFT = 0;
+    public static final int FLAG_MOVE_TO_RIGHT = 1;
 
     //Todo: при повороте может произойти конфликт в потоках
     private FigureModel mCurrentFigure;
@@ -121,14 +117,40 @@ public class GameViewAdapter{
 
     public void moveFigureToRight(){
         //TODO: здесь тоже некрасивая "-1"
-        if(mCurrentFigure.getShape()[FigureModel.X_INDEX] + mCurrentPoint.x < GameView.WIDTH_IN_BlOCKS - 1){
+        if(mCurrentFigure.getShape()[FigureModel.X_INDEX] + mCurrentPoint.x < GameView.WIDTH_IN_BlOCKS - 1
+                    && !checkIfNearBlocks(FLAG_MOVE_TO_RIGHT)){
             mCurrentPoint.x++;
             sendRectsToView();
         }
     }
 
+    private boolean checkIfNearBlocks(int mode){
+        for (GameRect droppedRect : mDroppedRects) {
+            List<GameRect> figureRects = mCurrentFigure.getRects();
+            for (GameRect figureRect : figureRects) {
+                Point figCoord = figureRect.getGameRectInAbsoluteCoolrinates(mCurrentPoint).getCoordinate();
+                Point droppedCoord = droppedRect.getCoordinate();
+                switch (mode){
+                    case FLAG_MOVE_TO_LEFT:
+                        if(figCoord.y == droppedCoord.y && figCoord.x - 1 == droppedCoord.x){
+                            return true;
+                        }
+                        break;
+                    case FLAG_MOVE_TO_RIGHT:
+                        if(figCoord.y == droppedCoord.y && figCoord.x + 1 == droppedCoord.x){
+                            return true;
+                        }
+                        break;
+                    default: throw new RuntimeException("Unsupported flag");
+                }
+            }
+        }
+
+        return false;
+    }
+
     public void moveFigureToLeft(){
-        if(mCurrentPoint.x > 0){
+        if(mCurrentPoint.x > 0 && !checkIfNearBlocks(FLAG_MOVE_TO_LEFT)){
             mCurrentPoint.x--;
             sendRectsToView();
         }
