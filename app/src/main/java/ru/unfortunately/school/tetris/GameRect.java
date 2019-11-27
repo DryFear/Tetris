@@ -16,8 +16,14 @@ public class GameRect {
         mColor = color;
     }
 
+    public GameRect(GameRect gameRect){
+        mRect = new Rect(gameRect.getRect());
+        mColor = gameRect.getColor();
+        mCoordinate = new Point(gameRect.getCoordinate());
+    }
+
     public Rect getRect() {
-        return mRect;
+        return new Rect(mRect);
     }
 
     public void setRect(Rect rect) {
@@ -33,7 +39,7 @@ public class GameRect {
     }
 
     public Point getCoordinate() {
-        return mCoordinate;
+        return new Point(mCoordinate);
     }
 
     public void setCoordinate(Point coordinate) {
@@ -47,7 +53,13 @@ public class GameRect {
         final int t = mCoordinate.y*scale;
         final int r = l + (width * scale);
         final int b = t + (height * scale);
-        Rect rect = new Rect(l, t, r, b);
-        return rect;
+        return new Rect(l, t, r, b);
+    }
+
+    public GameRect getGameRectInAbsoluteCoolrinates(Point absCoord){
+        Point point = new Point(mCoordinate);
+        point.x += absCoord.x;
+        point.y += absCoord.y;
+        return new GameRect(point, mColor);
     }
 }

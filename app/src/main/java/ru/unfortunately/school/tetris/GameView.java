@@ -3,10 +3,11 @@ package ru.unfortunately.school.tetris;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.graphics.Rect;
-import android.os.AsyncTask;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -23,10 +24,13 @@ public class GameView extends View {
     public static final int WIDTH_IN_BlOCKS = 10;
     public static final int HEIGHT_IN_BLOCKS = 20;
 
+    private static final int GAME_FIELD_WIDTH = BLOCK_LENGTH * WIDTH_IN_BlOCKS;
+
     private GameViewAdapter mAdapter;
     private List<GameRect> mGameRects = new ArrayList<>();
 
     private Paint mPaint = new Paint();
+    private Paint mBoardPaint;
 
     public GameView(Context context) {
         super(context);
@@ -47,7 +51,32 @@ public class GameView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        drawBoards(canvas);
         drawRects(canvas);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int actionEvent = event.getAction();
+        if(actionEvent == MotionEvent.ACTION_DOWN){
+            float x = event.getX();
+            if(x > GAME_FIELD_WIDTH/2.0){
+                mAdapter.moveFigureToRight();
+            }
+            else{
+                mAdapter.moveFigureToLeft();
+            }
+            return true;
+        }
+
+        return super.onTouchEvent(event);
+    }
+
+    private void drawBoards(Canvas canvas){
+        canvas.drawLine(0, 0, 0, HEIGHT_IN_BLOCKS*BLOCK_LENGTH, mBoardPaint);
+        canvas.drawLine(0, 0, WIDTH_IN_BlOCKS*BLOCK_LENGTH, 0, mBoardPaint);
+        canvas.drawLine(WIDTH_IN_BlOCKS*BLOCK_LENGTH, 0, WIDTH_IN_BlOCKS*BLOCK_LENGTH, HEIGHT_IN_BLOCKS*BLOCK_LENGTH, mBoardPaint);
+        canvas.drawLine(0, HEIGHT_IN_BLOCKS*BLOCK_LENGTH, WIDTH_IN_BlOCKS*BLOCK_LENGTH, HEIGHT_IN_BLOCKS*BLOCK_LENGTH, mBoardPaint);
     }
 
     private void drawRects(Canvas canvas) {
@@ -81,6 +110,10 @@ public class GameView extends View {
     public void setAdapter(GameViewAdapter adapter){
         mAdapter = adapter;
         mAdapter.setGameView(this);
+        mBoardPaint = new Paint();
+        mBoardPaint.setStyle(Style.STROKE);
+        mBoardPaint.setStrokeWidth(10);
+
         mAdapter.startGame();
     }
 

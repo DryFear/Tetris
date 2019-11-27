@@ -1,16 +1,28 @@
 package ru.unfortunately.school.tetris;
 
+import android.animation.ValueAnimator;
+import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.graphics.Point;
 import android.util.Log;
+import android.view.animation.LinearInterpolator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class GameViewAdapter implements Runnable {
+
+
+
+
+public class GameViewAdapter{
 
     private static final String TAG = "GameViewLogCatTag";
-    
+
+
+    /**
+    *
+    *
+    */
     private GameView mGameView;
 
 
@@ -19,13 +31,15 @@ public class GameViewAdapter implements Runnable {
     private Point mCurrentPoint;
     private List<GameRect> mDroppedRects;
     private int mGameSpeed;
+    private ValueAnimator mAnimator;
 
     public void startGame(){
-        new Thread(this).start();
         setNewRandomFigure();
         mDroppedRects = new ArrayList<>();
-//        GameProcess process = new GameProcess();
-//        process.doInBackground();
+        mAnimator = ValueAnimator.ofInt(0, GameView.HEIGHT_IN_BLOCKS);
+        mAnimator.setDuration(mGameSpeed*GameView.HEIGHT_IN_BLOCKS);
+        mAnimator.setInterpolator(new LinearInterpolator());
+        startAnimation();
     }
 
     public void setGameView(GameView gameView) {
@@ -35,49 +49,67 @@ public class GameViewAdapter implements Runnable {
     public void setGameSpeed(int gameSpeed) {
         mGameSpeed = gameSpeed;
         //Todo: хардкод. Переделать по-человечески
-        gameSpeed = 1000;
+        mGameSpeed = 300;
     }
 
-    @Override
-    public void run() {
-        setNewRandomFigure();
-        mDroppedRects = new ArrayList<>();
-        loop();
-    }
 
-    private void loop(){
-        while (true){
-            mCurrentPoint.y++;
-            try {
-                Thread.sleep(mGameSpeed);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+    private void startAnimation(){
+        mAnimator.addUpdateListener(new AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+
+                if(touchCheck()){
+                    mAnimator.cancel();
+                    Log.i(TAG, "onAnimationUpdate: touchCheck - true ");
+                    onTouch();
+                    mAnimator.start();
+                }
+
+                mCurrentPoint.y = (int)animation.getAnimatedValue();
+                sendRectsToView();
             }
-            if(touchCheck()){
-                onTouch();
-            }
-            Log.i(TAG, "loop: ");
-            sendRectsToView();
-        }
+        });
+        mAnimator.start();
     }
 
     private void sendRectsToView() {
         List<GameRect> rects = new ArrayList<>(mDroppedRects);
         List<GameRect> figureRects = mCurrentFigure.getRects();
         for (GameRect figureRect : figureRects) {
-            rects.add(figureRect);
+//            Point newCoord = new Point();
+//            newCoord.x = figureRect.getCoordinate().x;
+//            newCoord.x = mCurrentPoint.x + figureRect.getCoordinate().x;
+//            newCoord.y = mCurrentPoint.y + figureRect.getCoordinate().y;
+//            GameRect rect = new GameRect(newCoord, figureRect.getColor());
+            rects.add(figureRect.getGameRectInAbsoluteCoolrinates(mCurrentPoint));
         }
         mGameView.setGameRects(rects);
     }
 
     private void onTouch(){
-        //Todo: Разобрать страую фигуру на квадраты, создать новую
+        List<GameRect> rects = mCurrentFigure.getRects();
+        for (GameRect rect : rects) {
+            mDroppedRects.add(rect.getGameRectInAbsoluteCoolrinates(mCurrentPoint));
+        }
         setNewRandomFigure();
+        //TODO: Проверить на заполненные ряды
     }
 
     private boolean touchCheck(){
-        //Todo: проверить коснулась ли фигура низа
-        return mCurrentFigure.getShape()[FigureModel.Y_INDEX] + mCurrentPoint.y >= GameView.HEIGHT_IN_BLOCKS;
+        //TODO: проверить коснулась ли фигура других фигур
+        //TODO: подумать как лучше заменить "-1"
+        for (GameRect droppedRect : mDroppedRects) {
+            List<GameRect> figureRects = mCurrentFigure.getRects();
+            for (GameRect figureRect : figureRects) {
+                Point figCoord = figureRect.getGameRectInAbsoluteCoolrinates(mCurrentPoint).getCoordinate();
+                Point droppedCoord = droppedRect.getCoordinate();
+                if(figCoord.x == droppedCoord.x && figCoord.y + 1 == droppedCoord.y){
+                    return true;
+                }
+            }
+        }
+
+        return mCurrentFigure.getShape()[FigureModel.Y_INDEX] + mCurrentPoint.y>= GameView.HEIGHT_IN_BLOCKS - 1;
     }
 
     private void setNewRandomFigure(){
@@ -87,44 +119,19 @@ public class GameViewAdapter implements Runnable {
         mCurrentPoint = new Point(GameView.WIDTH_IN_BlOCKS/2, 0);
     }
 
-    private List<GameRect> getAllRects(){
-        List<GameRect> rects = new ArrayList<>(mDroppedRects);
-        List<GameRect> figureRects = mCurrentFigure.getRects();
-        for (GameRect figureRect : figureRects) {
-            rects.add(figureRect);
+    public void moveFigureToRight(){
+        //TODO: здесь тоже некрасивая "-1"
+        if(mCurrentFigure.getShape()[FigureModel.X_INDEX] + mCurrentPoint.x < GameView.WIDTH_IN_BlOCKS - 1){
+            mCurrentPoint.x++;
+            sendRectsToView();
         }
-        return rects;
     }
 
-    private void setRectToView(List<GameRect> rects){
-        mGameView.setGameRects(rects);
-    }
+    public void moveFigureToLeft(){
+        if(mCurrentPoint.x > 0){
+            mCurrentPoint.x--;
+            sendRectsToView();
+        }
 
-//    private class GameProcess extends AsyncTask<Void, List<GameRect>, Void> {
-//
-//
-//        @Override
-//        protected Void doInBackground(Void... voids) {
-//            for (int i = 0; i < 10; i++){
-//                mCurrentPoint.y++;
-//                try {
-//                    Thread.sleep(mGameSpeed);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                if(touchCheck()){
-//                    onTouch();
-//                }
-//                Log.i(TAG, "loop: ");
-//                publishProgress(getAllRects());
-//            }
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onProgressUpdate(List<GameRect>... values) {
-//            Log.i(TAG, "onProgressUpdate: " + values[0].size());
-//            setRectToView(values[0]);
-//        }
-//    }
+    }
 }
