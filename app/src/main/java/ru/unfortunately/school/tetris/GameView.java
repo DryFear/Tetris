@@ -4,9 +4,10 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
-import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -18,9 +19,8 @@ import androidx.annotation.Nullable;
 public class GameView extends View {
 
     private static final String TAG = "GameViewLogcatTag";
-    private static final boolean IS_LOGGING = false;
 
-    public static final int BLOCK_LENGTH = 30;
+    public static final int BLOCK_LENGTH = 70;
     public static final int WIDTH_IN_BlOCKS = 10;
     public static final int HEIGHT_IN_BLOCKS = 20;
 
@@ -31,21 +31,74 @@ public class GameView extends View {
 
     private Paint mPaint = new Paint();
     private Paint mBoardPaint;
+    private GestureDetector mDetector;
 
     public GameView(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public GameView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
     public GameView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init();
     }
 
     public GameView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        init();
+    }
+
+    private void init() {
+        mDetector = new GestureDetector(getContext(), new OnGestureListener() {
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return true;
+            }
+
+            @Override
+            public void onShowPress(MotionEvent e) {
+
+            }
+
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                Log.i(TAG, "onSingleTapUp");
+                float x = e.getX();
+                if(x > GAME_FIELD_WIDTH/2.0){
+                    mAdapter.moveFigureToRight();
+                }
+                else{
+                    mAdapter.moveFigureToLeft();
+                }
+                return true;
+            }
+
+            @Override
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                return false;
+            }
+
+            @Override
+            public void onLongPress(MotionEvent e) {
+
+            }
+
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                Log.i(TAG, "onFling: ");
+                if(velocityX > 0){
+                    mAdapter.swipeRight();
+                }
+                else{
+                    mAdapter.swipeLeft();
+                }
+                return true;
+            }
+        });
     }
 
     @Override
@@ -57,19 +110,7 @@ public class GameView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        int actionEvent = event.getAction();
-        if(actionEvent == MotionEvent.ACTION_DOWN){
-            float x = event.getX();
-            if(x > GAME_FIELD_WIDTH/2.0){
-                mAdapter.moveFigureToRight();
-            }
-            else{
-                mAdapter.moveFigureToLeft();
-            }
-            return true;
-        }
-
-        return super.onTouchEvent(event);
+        return mDetector.onTouchEvent(event);
     }
 
     private void drawBoards(Canvas canvas){
@@ -82,28 +123,13 @@ public class GameView extends View {
     private void drawRects(Canvas canvas) {
         for (GameRect gameRect : mGameRects) {
             mPaint.setColor(gameRect.getColor());
-            if(IS_LOGGING){
-                Rect rect = gameRect.getRectWithScaleInAbsoluteCoordinates(BLOCK_LENGTH);
-                Log.i(TAG, "drawRects method, this is absolute coordinates of rect: left: " +
-                        rect.left + ", top: " +
-                        rect.top + ", right: " +
-                        rect.right + ", bottom: " +
-                        rect.bottom);
-            }
             canvas.drawRect(gameRect.getRectWithScaleInAbsoluteCoordinates(BLOCK_LENGTH), mPaint);
         }
     }
 
 
     synchronized public void setGameRects(List<GameRect> rects){
-
         mGameRects = rects;
-        if(IS_LOGGING){
-            Log.i(TAG, "setGameRects method in GameView: Input List size:" + rects.size() + " and their coordinates:");
-            for (GameRect rect : rects) {
-                Log.i(TAG, "Rect coordinates : " + rect.getCoordinate().x + " , " + rect.getCoordinate().y);
-            }
-        }
         invalidate();
     }
 

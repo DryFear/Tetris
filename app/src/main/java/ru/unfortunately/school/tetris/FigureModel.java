@@ -41,10 +41,20 @@ public class FigureModel {
     }
 
     public void transposeToLeft(){
-        // Todo: Сделать поворот фигуры на лево
+        int[] shape = getShape();
+        for (GameRect rect : mRects) {
+            int x = rect.getCoordinate().y;
+            int y = shape[X_INDEX] - rect.getCoordinate().x;
+            rect.setCoordinate(new Point(x, y));
+        }
     }
 
     public void transposeToRight(){
-        // Todo: Сделать поворот фигуры на право
+        int[] shape = getShape();
+        for (GameRect rect : mRects) {
+            int y = rect.getCoordinate().x;
+            int x = shape[Y_INDEX] - rect.getCoordinate().y;
+            rect.setCoordinate(new Point(x, y));
+        }
     }
 }

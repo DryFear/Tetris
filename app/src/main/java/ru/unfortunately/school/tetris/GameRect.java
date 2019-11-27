@@ -3,6 +3,8 @@ package ru.unfortunately.school.tetris;
 import android.graphics.Point;
 import android.graphics.Rect;
 
+import androidx.annotation.Nullable;
+
 public class GameRect {
 
     private Rect mRect;
@@ -61,5 +63,15 @@ public class GameRect {
         point.x += absCoord.x;
         point.y += absCoord.y;
         return new GameRect(point, mColor);
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if(!(obj instanceof GameRect)) return false;
+        GameRect rect = (GameRect) obj;
+        if(rect.getCoordinate().equals(getCoordinate()) && rect.getColor() == getColor()){
+            return true;
+        }
+        return false;
     }
 }

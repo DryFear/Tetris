@@ -3,10 +3,10 @@ package ru.unfortunately.school.tetris;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.graphics.Point;
-import android.util.Log;
 import android.view.animation.LinearInterpolator;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -29,9 +29,10 @@ public class GameViewAdapter{
     private int mGameSpeed;
     private ValueAnimator mAnimator;
 
+
     public void startGame(){
         setNewRandomFigure();
-        mDroppedRects = new ArrayList<>();
+        mDroppedRects = new LinkedList<>();
         mAnimator = ValueAnimator.ofInt(0, GameView.HEIGHT_IN_BLOCKS);
         mAnimator.setDuration(mGameSpeed*GameView.HEIGHT_IN_BLOCKS);
         mAnimator.setInterpolator(new LinearInterpolator());
@@ -45,7 +46,7 @@ public class GameViewAdapter{
     public void setGameSpeed(int gameSpeed) {
         mGameSpeed = gameSpeed;
         //Todo: хардкод. Переделать по-человечески
-        mGameSpeed = 300;
+        mGameSpeed = 340;
     }
 
 
@@ -56,7 +57,6 @@ public class GameViewAdapter{
 
                 if(touchCheck()){
                     mAnimator.cancel();
-                    Log.i(TAG, "onAnimationUpdate: touchCheck - true ");
                     onTouch();
                     mAnimator.start();
                 }
@@ -69,14 +69,9 @@ public class GameViewAdapter{
     }
 
     private void sendRectsToView() {
-        List<GameRect> rects = new ArrayList<>(mDroppedRects);
+        List<GameRect> rects = new LinkedList<>(mDroppedRects);
         List<GameRect> figureRects = mCurrentFigure.getRects();
         for (GameRect figureRect : figureRects) {
-//            Point newCoord = new Point();
-//            newCoord.x = figureRect.getCoordinate().x;
-//            newCoord.x = mCurrentPoint.x + figureRect.getCoordinate().x;
-//            newCoord.y = mCurrentPoint.y + figureRect.getCoordinate().y;
-//            GameRect rect = new GameRect(newCoord, figureRect.getColor());
             rects.add(figureRect.getGameRectInAbsoluteCoolrinates(mCurrentPoint));
         }
         mGameView.setGameRects(rects);
@@ -88,11 +83,42 @@ public class GameViewAdapter{
             mDroppedRects.add(rect.getGameRectInAbsoluteCoolrinates(mCurrentPoint));
         }
         setNewRandomFigure();
-        //TODO: Проверить на заполненные ряды
+        deleteRows();
+    }
+
+    private void deleteRows() {
+        for (int i = 0; i < GameView.HEIGHT_IN_BLOCKS; i++) {
+            if(checkFillRow(i)){
+                List<GameRect> tempList = new ArrayList<>(mDroppedRects);
+                for (GameRect droppedRect : tempList) {
+                    int y = droppedRect.getCoordinate().y;
+                    if(y == i){
+                        mDroppedRects.remove(droppedRect);
+                    }
+                    if(y < i){
+                        Point coord = droppedRect.getCoordinate();
+                        coord.y++;
+                        droppedRect.setCoordinate(coord);
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean checkFillRow(int row){
+        int count = 0;
+        for (GameRect droppedRect : mDroppedRects) {
+            if(droppedRect.getCoordinate().y == row){
+                count++;
+            }
+        }
+        if(count == GameView.WIDTH_IN_BlOCKS){
+            return true;
+        }
+        return false;
     }
 
     private boolean touchCheck(){
-        //TODO: проверить коснулась ли фигура других фигур
         //TODO: подумать как лучше заменить "-1"
         for (GameRect droppedRect : mDroppedRects) {
             List<GameRect> figureRects = mCurrentFigure.getRects();
@@ -147,6 +173,14 @@ public class GameViewAdapter{
         }
 
         return false;
+    }
+
+    public void swipeRight(){
+        mCurrentFigure.transposeToRight();
+    }
+
+    public void swipeLeft(){
+        mCurrentFigure.transposeToLeft();
     }
 
     public void moveFigureToLeft(){
