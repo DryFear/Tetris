@@ -18,6 +18,8 @@ import androidx.annotation.Nullable;
 
 public class GameView extends View {
 
+    //
+
     private static final String TAG = "GameViewLogcatTag";
 
     public static final int BLOCK_LENGTH = 70;
