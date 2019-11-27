@@ -140,6 +140,7 @@ public class GameView extends View {
         mAdapter = adapter;
         mAdapter.setGameView(this);
         mAdapter.startGame();
+        //sadsd
     }
 
 
