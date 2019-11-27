@@ -29,8 +29,8 @@ public class GameView extends View {
     private GameViewAdapter mAdapter;
     private List<GameRect> mGameRects = new ArrayList<>();
 
-    private Paint mPaint = new Paint();
-    private Paint mBoardPaint;
+    private Paint mRectPaint = new Paint();
+    private Paint mBoardPaint = new Paint();
     private GestureDetector mDetector;
 
     public GameView(Context context) {
@@ -53,6 +53,9 @@ public class GameView extends View {
     }
 
     private void init() {
+        mBoardPaint.setStyle(Style.STROKE);
+        mRectPaint.setStyle(Style.FILL);
+        mBoardPaint.setStrokeWidth(10);
         mDetector = new GestureDetector(getContext(), new OnGestureListener() {
             @Override
             public boolean onDown(MotionEvent e) {
@@ -122,8 +125,8 @@ public class GameView extends View {
 
     private void drawRects(Canvas canvas) {
         for (GameRect gameRect : mGameRects) {
-            mPaint.setColor(gameRect.getColor());
-            canvas.drawRect(gameRect.getRectWithScaleInAbsoluteCoordinates(BLOCK_LENGTH), mPaint);
+            mRectPaint.setColor(gameRect.getColor());
+            canvas.drawRect(gameRect.getRectWithScaleInAbsoluteCoordinates(BLOCK_LENGTH), mRectPaint);
         }
     }
 
@@ -136,10 +139,6 @@ public class GameView extends View {
     public void setAdapter(GameViewAdapter adapter){
         mAdapter = adapter;
         mAdapter.setGameView(this);
-        mBoardPaint = new Paint();
-        mBoardPaint.setStyle(Style.STROKE);
-        mBoardPaint.setStrokeWidth(10);
-
         mAdapter.startGame();
     }
 
