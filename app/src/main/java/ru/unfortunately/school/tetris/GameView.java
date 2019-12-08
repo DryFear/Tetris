@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.Point;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -23,10 +24,15 @@ public class GameView extends View {
     private static final String TAG = "GameViewLogcatTag";
 
     public static final int BLOCK_LENGTH = 70;
-    public static final int WIDTH_IN_BlOCKS = 10;
+    public static final int WIDTH_IN_BLOCKS = 10;
     public static final int HEIGHT_IN_BLOCKS = 20;
 
-    private static final int GAME_FIELD_WIDTH = BLOCK_LENGTH * WIDTH_IN_BlOCKS;
+    private int mGameWidth = 0;
+    private int mGameHeight = 0;
+    private int mBorderStroke = 10;
+    private int mBlockLength;
+
+    private static final int GAME_FIELD_WIDTH = BLOCK_LENGTH * WIDTH_IN_BLOCKS;
 
     private GameViewAdapter mAdapter;
     private List<GameRect> mGameRects = new ArrayList<>();
@@ -34,6 +40,7 @@ public class GameView extends View {
     private Paint mRectPaint = new Paint();
     private Paint mBoardPaint = new Paint();
     private GestureDetector mDetector;
+    private Point mDisplaySize;
 
     public GameView(Context context) {
         this(context, null);
@@ -54,10 +61,39 @@ public class GameView extends View {
         init();
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int height = MeasureSpec.getSize(heightMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        if(heightMode == MeasureSpec.EXACTLY && widthMode == MeasureSpec.EXACTLY){
+            mGameWidth = width;
+            mGameHeight = height;
+        }else if(heightMode == MeasureSpec.AT_MOST && widthMode == MeasureSpec.AT_MOST){
+            mGameHeight = height;
+            mGameWidth = (height - mBorderStroke*2)/2 + mBorderStroke*2;
+        }else if(heightMode == MeasureSpec.UNSPECIFIED && widthMode == MeasureSpec.UNSPECIFIED){
+
+        }else{
+            //TODO: Рассмотреть случай когда моды не равны
+        }
+        setMeasuredDimension(mGameWidth, mGameHeight);
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        mBlockLength = (int)(mGameWidth-2.0*mBorderStroke)/WIDTH_IN_BLOCKS;
+        Log.i(TAG, "BlockLen: " + mBlockLength);
+        Log.i(TAG, "onLayout: ");
+        Log.i(TAG, "Height: " + mGameHeight);
+        super.onLayout(changed, left, top, right, bottom);
+    }
+
     private void init() {
         mBoardPaint.setStyle(Style.STROKE);
         mRectPaint.setStyle(Style.FILL);
-        mBoardPaint.setStrokeWidth(10);
+        mBoardPaint.setStrokeWidth(mBorderStroke);
         mDetector = new GestureDetector(getContext(), new OnGestureListener() {
             @Override
             public boolean onDown(MotionEvent e) {
@@ -121,16 +157,20 @@ public class GameView extends View {
     }
 
     private void drawBoards(Canvas canvas){
-        canvas.drawLine(0, 0, 0, HEIGHT_IN_BLOCKS*BLOCK_LENGTH, mBoardPaint);
-        canvas.drawLine(0, 0, WIDTH_IN_BlOCKS*BLOCK_LENGTH, 0, mBoardPaint);
-        canvas.drawLine(WIDTH_IN_BlOCKS*BLOCK_LENGTH, 0, WIDTH_IN_BlOCKS*BLOCK_LENGTH, HEIGHT_IN_BLOCKS*BLOCK_LENGTH, mBoardPaint);
-        canvas.drawLine(0, HEIGHT_IN_BLOCKS*BLOCK_LENGTH, WIDTH_IN_BlOCKS*BLOCK_LENGTH, HEIGHT_IN_BLOCKS*BLOCK_LENGTH, mBoardPaint);
+        mBoardPaint.setStrokeWidth(mBorderStroke*2);
+        canvas.drawLine(0, 0, 0, mGameHeight, mBoardPaint);
+        canvas.drawLine(0, 0, mGameWidth, 0, mBoardPaint);
+        canvas.drawLine(mGameWidth, 0, mGameWidth, mGameHeight, mBoardPaint);
+        canvas.drawLine(0, mGameHeight, mGameWidth, mGameHeight, mBoardPaint);
+        mBoardPaint.setStrokeWidth(mBorderStroke);
     }
 
     private void drawRects(Canvas canvas) {
+        canvas.translate(mBorderStroke, mBorderStroke);
         for (GameRect gameRect : mGameRects) {
             mRectPaint.setColor(gameRect.getColor());
-            canvas.drawRect(gameRect.getRectWithScaleInAbsoluteCoordinates(BLOCK_LENGTH), mRectPaint);
+            canvas.drawRect(gameRect.getRectWithScaleInAbsoluteCoordinates(mBlockLength), mRectPaint);
+            canvas.drawRect(gameRect.getRectWithScaleInAbsoluteCoordinates(mBlockLength), mBoardPaint);
         }
     }
 

@@ -112,7 +112,7 @@ public class GameViewAdapter{
                 count++;
             }
         }
-        if(count == GameView.WIDTH_IN_BlOCKS){
+        if(count == GameView.WIDTH_IN_BLOCKS){
             return true;
         }
         return false;
@@ -138,12 +138,12 @@ public class GameViewAdapter{
         List<FigureModel> figures = Figures.getAllFigures();
         Random random = new Random();
         mCurrentFigure = figures.get(random.nextInt(figures.size()));
-        mCurrentPoint = new Point(GameView.WIDTH_IN_BlOCKS/2, 0);
+        mCurrentPoint = new Point(GameView.WIDTH_IN_BLOCKS /2, 0);
     }
 
     public void moveFigureToRight(){
         //TODO: здесь тоже некрасивая "-1"
-        if(mCurrentFigure.getShape()[FigureModel.X_INDEX] + mCurrentPoint.x < GameView.WIDTH_IN_BlOCKS - 1
+        if(mCurrentFigure.getShape()[FigureModel.X_INDEX] + mCurrentPoint.x < GameView.WIDTH_IN_BLOCKS - 1
                     && !checkIfNearBlocks(FLAG_MOVE_TO_RIGHT)){
             mCurrentPoint.x++;
             sendRectsToView();
