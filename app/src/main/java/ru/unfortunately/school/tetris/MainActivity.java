@@ -21,6 +21,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Настройка игрового поля и добавление для него адаптера
+     */
+
     private void setUpGameView() {
         mGameView = findViewById(R.id.game_view);
         GameViewAdapter adapter = new GameViewAdapter();

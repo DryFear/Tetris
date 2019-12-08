@@ -17,31 +17,91 @@ import java.util.List;
 
 import androidx.annotation.Nullable;
 
-public class GameView extends View {
+/**
+ * Prod by Unfortunately Still Alive (Александр Воронин)
+ */
 
-    //
+/**
+ *
+ * View для игрового поля
+ * Вся логика фигур обрабатывается в адаптере (см. {@link GameViewAdapter})
+ *
+ * Под блоками, которые будут описаны ниже, подразумеваются
+ * экземпляры класса GameRect {@link GameRect}
+ */
+
+public class GameView extends View {
 
     private static final String TAG = "GameViewLogcatTag";
 
-    public static final int BLOCK_LENGTH = 70;
+    /**
+     *  Константы, которые содержат длину и ширину игрового поля в блоках
+     */
     public static final int WIDTH_IN_BLOCKS = 10;
     public static final int HEIGHT_IN_BLOCKS = 20;
 
+    /**
+     * Длина и ширина игрового поля.
+     * Меняется только в onMeasure {@link GameView#onMeasure(int, int)}
+     */
     private int mGameWidth = 0;
     private int mGameHeight = 0;
+
+    /**
+     * Ширина границ игрового поля.
+     * //TODO: Сделать ее настраиваемой через xml
+     */
     private int mBorderStroke = 10;
+
+    /**
+     * Длина и ширина для одного блока
+     *
+     * Блоки всегда квадратные, поэтому для длины и ширины
+     * используется только одна переменная
+     *
+     * Задается после определения размеров поля в {@link GameView#onSizeChanged(int, int, int, int)}
+     */
     private int mBlockLength;
 
-    private static final int GAME_FIELD_WIDTH = BLOCK_LENGTH * WIDTH_IN_BLOCKS;
 
+    /**
+     * Игровой адаптер, в котором обрабатывается вся логика
+     * Без него игра работать не будет {@link GameViewAdapter}
+     */
     private GameViewAdapter mAdapter;
+
+    /**
+     * Блоки для отрисовки.
+     * Блоки задаются только через сеттер: {@link GameView#setGameRects(List)}
+     */
     private List<GameRect> mGameRects = new ArrayList<>();
 
+    /**
+     * mRectPaint для отрисовки блоков
+     * mBoardPaint для отрисовки границ поля и границ блоков
+     *
+     * Стартовые параметры задаются в {@link GameView#init()}
+     */
     private Paint mRectPaint = new Paint();
     private Paint mBoardPaint = new Paint();
+
+    /**
+     * Детектор для упрощения работы с жестами.
+     * Инициализируется в {@link GameView#init()}
+     */
     private GestureDetector mDetector;
+
+    /**
+     * Размер экрана
+     * Используется для задания размеров игрового поля
+     * в {@link GameView#onMeasure(int, int)}
+     */
     private Point mDisplaySize;
 
+
+    /**
+     * Стандартные конструкторы View
+     */
     public GameView(Context context) {
         this(context, null);
     }
@@ -61,6 +121,44 @@ public class GameView extends View {
         init();
     }
 
+    /**
+     * Устанавливает игровые блоки для отрисовки
+     * Вызывается обычно из адаптера {@link GameView#mAdapter}
+     * Вызывает invalidate() для обновления рисунка на экране
+     *
+     * @param rects - игровые блоки для отрисовки
+     */
+    public void setGameRects(List<GameRect> rects){
+        mGameRects = rects;
+        invalidate();
+    }
+
+    /**
+     * Устанавливает адаптер для игры {@link GameView#mAdapter}
+     * и настраивает его.
+     *
+     * //TODO: Сделать startGame() отдельным методом view
+     */
+
+    public void setAdapter(GameViewAdapter adapter){
+        mAdapter = adapter;
+        mAdapter.setGameView(this);
+        mAdapter.startGame();
+    }
+
+    /**
+     * @return Передает всю обработку касаний детектору (См {@link GameView#mDetector})
+     */
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return mDetector.onTouchEvent(event);
+    }
+
+    /**
+     * Игровое поле хочет Выставить свои размеры в соотношении 20:10
+     * с учетом линии границ
+     *
+     */
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int height = MeasureSpec.getSize(heightMeasureSpec);
@@ -81,15 +179,35 @@ public class GameView extends View {
         setMeasuredDimension(mGameWidth, mGameHeight);
     }
 
+    /**
+     * В этом методе меняется только длина и ширина блока на основе
+     * установленных размеров поля
+     *
+     * См {@link GameView#mBlockLength}
+     */
     @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
         mBlockLength = (int)(mGameWidth-2.0*mBorderStroke)/WIDTH_IN_BLOCKS;
-        Log.i(TAG, "BlockLen: " + mBlockLength);
-        Log.i(TAG, "onLayout: ");
-        Log.i(TAG, "Height: " + mGameHeight);
-        super.onLayout(changed, left, top, right, bottom);
     }
 
+    /**
+     * Переопределенный метод {@link View#onDraw(Canvas)}
+     * Вызывает 2 метода для отрисовки границ поля и
+     * всех игровых блоков
+     * см {@link GameView#drawBoards(Canvas)}, {@link GameView#drawRects(Canvas)}
+     */
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        drawBoards(canvas);
+        drawRects(canvas);
+    }
+
+    /**
+     * Задает параметры для {@link GameView#mRectPaint} и {@link GameView#mBoardPaint}
+     * А так же инициализирует детектор {@link GameView#mDetector}
+     */
     private void init() {
         mBoardPaint.setStyle(Style.STROKE);
         mRectPaint.setStyle(Style.FILL);
@@ -105,11 +223,17 @@ public class GameView extends View {
 
             }
 
+            /**
+             * При тапе на левую часть экрана
+             * вызывает {@link GameViewAdapter#moveFigureToLeft()}
+             * для перемещения падающей фигуры влево
+             *
+             * Аналогично с правой частью экрана и {@link GameViewAdapter#moveFigureToRight()}
+             */
             @Override
             public boolean onSingleTapUp(MotionEvent e) {
-                Log.i(TAG, "onSingleTapUp");
                 float x = e.getX();
-                if(x > GAME_FIELD_WIDTH/2.0){
+                if(x > mGameWidth/2.0){
                     mAdapter.moveFigureToRight();
                 }
                 else{
@@ -128,6 +252,14 @@ public class GameView extends View {
 
             }
 
+            /**
+             * При свайпе влево вызывает {@link GameViewAdapter#swipeLeft()}
+             * для поворота падающей фигуры влево
+             *
+             * Аналогично со свпйпом вправо и {@link GameViewAdapter#swipeRight()}
+             *
+             * TODO: Сделать определение свайпа менее чувствительным и добавить свайп вниз для ускорения фигуры
+             */
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                 Log.i(TAG, "onFling: ");
@@ -142,20 +274,12 @@ public class GameView extends View {
         });
     }
 
-
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        drawBoards(canvas);
-        drawRects(canvas);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        return mDetector.onTouchEvent(event);
-    }
-
+    /**
+     * Рисует границы поля. Вызывается в {@link GameView#onDraw(Canvas)}
+     *
+     * Увеличивает толщину кисти перед рисованием, т.к. половина линии границы
+     * рисуется за пределами view и не видна
+     */
     private void drawBoards(Canvas canvas){
         mBoardPaint.setStrokeWidth(mBorderStroke*2);
         canvas.drawLine(0, 0, 0, mGameHeight, mBoardPaint);
@@ -165,6 +289,16 @@ public class GameView extends View {
         mBoardPaint.setStrokeWidth(mBorderStroke);
     }
 
+
+    /**
+     * Рисует игровые блоки. Вызывается в {@link GameView#onDraw(Canvas)}
+     * Перемещает канвас, чтобы блоки не накладывались на границы
+     *
+     * Блоки хранят внутри себя координаты не в пикселях, а в блоках, поэтому
+     * чтобы получить координаты в пикселях,
+     * вызвается {@link GameRect#getRectWithScaleInAbsoluteCoordinates(int)}
+     *
+     */
     private void drawRects(Canvas canvas) {
         canvas.translate(mBorderStroke, mBorderStroke);
         for (GameRect gameRect : mGameRects) {
@@ -173,20 +307,5 @@ public class GameView extends View {
             canvas.drawRect(gameRect.getRectWithScaleInAbsoluteCoordinates(mBlockLength), mBoardPaint);
         }
     }
-
-
-    synchronized public void setGameRects(List<GameRect> rects){
-        mGameRects = rects;
-        invalidate();
-    }
-
-    public void setAdapter(GameViewAdapter adapter){
-        mAdapter = adapter;
-        mAdapter.setGameView(this);
-        mAdapter.startGame();
-        //sadsd
-    }
-
-
 
 }
