@@ -1,4 +1,4 @@
-package ru.unfortunately.school.tetris;
+package ru.unfortunately.school.tetris.Fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,12 +7,17 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import ru.unfortunately.school.tetris.Game.GameView;
+import ru.unfortunately.school.tetris.Game.GameViewAdapter;
+import ru.unfortunately.school.tetris.IMainActivity;
+import ru.unfortunately.school.tetris.R;
 
 public class GameFragment extends Fragment {
 
@@ -20,6 +25,9 @@ public class GameFragment extends Fragment {
     private ImageView mNextFigureImageView;
     private ImageButton mPauseButton;
     private WeakReference<IMainActivity> mMainActivityRef;
+    private GameViewAdapter mGameAdapter;
+    private TextView mScoreView;
+
 
     private GameFragment(){
 
@@ -41,15 +49,17 @@ public class GameFragment extends Fragment {
         mGameView = view.findViewById(R.id.game_view);
         mNextFigureImageView = view.findViewById(R.id.img_next_figure);
         mPauseButton = view.findViewById(R.id.btn_pause);
+        mScoreView = view.findViewById(R.id.txt_score);
         return view;
     }
 
 
     private void setUpGameView() {
-        GameViewAdapter adapter = new GameViewAdapter();
-        adapter.setGameSpeed(1000);
-        adapter.setNextFigureImageView(mNextFigureImageView);
-        mGameView.setAdapter(adapter);
+        mGameAdapter = new GameViewAdapter();
+        mGameAdapter.setGameSpeed(1000);
+        mGameAdapter.setScoreView(mScoreView);
+        mGameAdapter.setNextFigureImageView(mNextFigureImageView);
+        mGameView.setAdapter(mGameAdapter);
     }
 
     private void setUpButton(){
@@ -71,5 +81,9 @@ public class GameFragment extends Fragment {
         }
         setUpGameView();
         setUpButton();
+    }
+
+    public GameViewAdapter getGameAdapter(){
+        return mGameAdapter;
     }
 }

@@ -3,6 +3,9 @@ package ru.unfortunately.school.tetris;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import ru.unfortunately.school.tetris.Fragments.GameFragment;
+import ru.unfortunately.school.tetris.Fragments.MainMenuFragment;
+import ru.unfortunately.school.tetris.Fragments.PauseFragment;
 
 public class MainActivity extends AppCompatActivity
                                 implements IMainActivity{
@@ -45,12 +48,14 @@ public class MainActivity extends AppCompatActivity
                 .addToBackStack(null)
                 .replace(R.id.root, mGameFragment)
                 .commit();
+        mGameFragment.getGameAdapter().resumeGame();
     }
 
     @Override
     public void pauseGame() {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.pause_root, PauseFragment.newInstance())
+                .add(R.id.root, PauseFragment.newInstance())
                 .commit();
+        mGameFragment.getGameAdapter().pauseGame();
     }
 }

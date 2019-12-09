@@ -1,4 +1,4 @@
-package ru.unfortunately.school.tetris;
+package ru.unfortunately.school.tetris.Game;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.Nullable;
+import ru.unfortunately.school.tetris.Models.GameRect;
 
 /**
  * Prod by Unfortunately Still Alive (Александр Воронин)

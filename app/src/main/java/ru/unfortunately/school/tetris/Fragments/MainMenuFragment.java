@@ -1,4 +1,4 @@
-package ru.unfortunately.school.tetris;
+package ru.unfortunately.school.tetris.Fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,6 +12,8 @@ import java.lang.ref.WeakReference;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import ru.unfortunately.school.tetris.IMainActivity;
+import ru.unfortunately.school.tetris.R;
 
 public class MainMenuFragment extends Fragment {
 

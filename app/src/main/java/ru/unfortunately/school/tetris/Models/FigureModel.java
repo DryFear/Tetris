@@ -1,4 +1,4 @@
-package ru.unfortunately.school.tetris;
+package ru.unfortunately.school.tetris.Models;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;

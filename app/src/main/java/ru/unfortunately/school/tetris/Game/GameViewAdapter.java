@@ -1,4 +1,4 @@
-package ru.unfortunately.school.tetris;
+package ru.unfortunately.school.tetris.Game;
 
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
@@ -6,14 +6,16 @@ import android.graphics.Point;
 import android.util.Log;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-
-
+import ru.unfortunately.school.tetris.Models.FigureModel;
+import ru.unfortunately.school.tetris.Models.Figures;
+import ru.unfortunately.school.tetris.Models.GameRect;
 
 
 public class GameViewAdapter{
@@ -26,6 +28,7 @@ public class GameViewAdapter{
 
     //Todo: при повороте может произойти конфликт в потоках
     private FigureModel mCurrentFigure;
+    private FigureModel mNextFigure;
     private Point mCurrentPoint;
     private List<GameRect> mDroppedRects;
     private int mGameSpeed;
@@ -34,9 +37,13 @@ public class GameViewAdapter{
 
     private ImageView mNextFigureImageView;
 
+    private final static int SCORE_STEP = 10;
+    private int mCurrentScore;
+    private TextView mScoreView;
 
     public void startGame(){
-        setNewRandomFigure();
+        setNewRandomFigure(true);
+        mCurrentScore = 0;
         mDroppedRects = new LinkedList<>();
         mAnimator = ValueAnimator.ofInt(0, GameView.HEIGHT_IN_BLOCKS);
         mAnimator.setDuration(mGameSpeed*GameView.HEIGHT_IN_BLOCKS);
@@ -100,12 +107,13 @@ public class GameViewAdapter{
         }
         deleteRows();
         sendRectsToView();
-        setNewRandomFigure();
+        setNewRandomFigure(false);
     }
 
     private void deleteRows() {
         for (int i = 0; i < GameView.HEIGHT_IN_BLOCKS; i++) {
             if(checkFillRow(i)){
+                mCurrentScore += SCORE_STEP;
                 List<GameRect> tempList = new ArrayList<>(mDroppedRects);
                 for (GameRect droppedRect : tempList) {
                     int y = droppedRect.getCoordinate().y;
@@ -120,6 +128,7 @@ public class GameViewAdapter{
                 }
             }
         }
+        mScoreView.setText(String.valueOf(mCurrentScore));
     }
 
     private boolean checkFillRow(int row){
@@ -151,16 +160,20 @@ public class GameViewAdapter{
         return mCurrentFigure.getShape()[FigureModel.Y_INDEX] + mCurrentPoint.y>= GameView.HEIGHT_IN_BLOCKS - 1;
     }
 
-    private void setNewRandomFigure(){
+    private void setNewRandomFigure(boolean isFirst){
         List<FigureModel> figures = Figures.getAllFigures();
         Random random = new Random();
-        mCurrentFigure = figures.get(random.nextInt(figures.size()));
+        if(isFirst){
+            mNextFigure = figures.get(random.nextInt(figures.size()));
+        }
+        mCurrentFigure = mNextFigure;
         mCurrentPoint = new Point(GameView.WIDTH_IN_BLOCKS /2, 0);
+        mNextFigure = figures.get(random.nextInt(figures.size()));
         mNextFigureImageView.setImageBitmap(
                 FigureModel.getBitmap(
                         50,
                         50,
-                        mCurrentFigure
+                        mNextFigure
                 ));
     }
 
@@ -214,6 +227,19 @@ public class GameViewAdapter{
             sendRectsToView();
         }
 
+    }
+
+    public void setScoreView(TextView view){
+        mScoreView = view;
+        mScoreView.setText(String.valueOf(mCurrentScore));
+    }
+
+    public void pauseGame(){
+        mAnimator.pause();
+    }
+
+    public void resumeGame(){
+        mAnimator.resume();
     }
 
     public void swipeDown() {
