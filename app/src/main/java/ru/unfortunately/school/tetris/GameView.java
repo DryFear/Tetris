@@ -6,7 +6,6 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Point;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
@@ -37,14 +36,14 @@ public class GameView extends View {
     /**
      *  Константы, которые содержат длину и ширину игрового поля в блоках
      */
-    public static final int WIDTH_IN_BLOCKS = 10;
-    public static final int HEIGHT_IN_BLOCKS = 20;
+    public static final int WIDTH_IN_BLOCKS     = 10;
+    public static final int HEIGHT_IN_BLOCKS    = 20;
 
     /**
      * Длина и ширина игрового поля.
      * Меняется только в onMeasure {@link GameView#onMeasure(int, int)}
      */
-    private int mGameWidth = 0;
+    private int mGameWidth  = 0;
     private int mGameHeight = 0;
 
     /**
@@ -82,8 +81,8 @@ public class GameView extends View {
      *
      * Стартовые параметры задаются в {@link GameView#init()}
      */
-    private Paint mRectPaint = new Paint();
-    private Paint mBoardPaint = new Paint();
+    private Paint mRectPaint    = new Paint();
+    private Paint mBoardPaint   = new Paint();
 
     /**
      * Детектор для упрощения работы с жестами.
@@ -97,6 +96,14 @@ public class GameView extends View {
      * в {@link GameView#onMeasure(int, int)}
      */
     private Point mDisplaySize;
+
+    /**
+     * Чувствительность свайпа. Указывает сколько блоков в секунду нужно
+     * свайпнуть для действия
+     *
+     * //TODO: Сделать настраиваемым через XML
+     */
+    private int mSwipeSence = 3;
 
 
     /**
@@ -161,16 +168,18 @@ public class GameView extends View {
      */
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int height = MeasureSpec.getSize(heightMeasureSpec);
-        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        int width = MeasureSpec.getSize(widthMeasureSpec);
-        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int height      = MeasureSpec.getSize(heightMeasureSpec);
+        int heightMode  = MeasureSpec.getMode(heightMeasureSpec);
+
+        int width       = MeasureSpec.getSize(widthMeasureSpec);
+        int widthMode   = MeasureSpec.getMode(widthMeasureSpec);
+
         if(heightMode == MeasureSpec.EXACTLY && widthMode == MeasureSpec.EXACTLY){
-            mGameWidth = width;
+            mGameWidth  = width;
             mGameHeight = height;
         }else if(heightMode == MeasureSpec.AT_MOST && widthMode == MeasureSpec.AT_MOST){
             mGameHeight = height;
-            mGameWidth = (height - mBorderStroke*2)/2 + mBorderStroke*2;
+            mGameWidth  = (height - mBorderStroke*2)/2 + mBorderStroke*2;
         }else if(heightMode == MeasureSpec.UNSPECIFIED && widthMode == MeasureSpec.UNSPECIFIED){
 
         }else{
@@ -183,12 +192,17 @@ public class GameView extends View {
      * В этом методе меняется только длина и ширина блока на основе
      * установленных размеров поля
      *
+     * Потом корректирует длину и ширину поля (из-за погрешности в int)
+     *
      * См {@link GameView#mBlockLength}
      */
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         mBlockLength = (int)(mGameWidth-2.0*mBorderStroke)/WIDTH_IN_BLOCKS;
+
+        mGameHeight = mBlockLength*HEIGHT_IN_BLOCKS + 2*mBorderStroke;
+        mGameWidth  = mBlockLength*WIDTH_IN_BLOCKS + 2*mBorderStroke;
     }
 
     /**
@@ -212,6 +226,8 @@ public class GameView extends View {
         mBoardPaint.setStyle(Style.STROKE);
         mRectPaint.setStyle(Style.FILL);
         mBoardPaint.setStrokeWidth(mBorderStroke);
+        mBoardPaint.setAntiAlias(true);
+
         mDetector = new GestureDetector(getContext(), new OnGestureListener() {
             @Override
             public boolean onDown(MotionEvent e) {
@@ -262,17 +278,24 @@ public class GameView extends View {
              */
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                Log.i(TAG, "onFling: ");
-                if(velocityX > 0){
-                    mAdapter.swipeRight();
-                }
-                else{
-                    mAdapter.swipeLeft();
+                float diffX = e2.getX() - e1.getX();
+                float diffY = e2.getY() - e1.getY();
+                float sence = mSwipeSence * mBlockLength;
+                if(diffY > diffX && diffY > sence){
+                    mAdapter.swipeDown();
+                }else{
+                    if(diffX > sence){
+                        mAdapter.swipeRight();
+                    }
+                    if(diffX < -sence){
+                        mAdapter.swipeLeft();
+                    }
                 }
                 return true;
             }
         });
     }
+
 
     /**
      * Рисует границы поля. Вызывается в {@link GameView#onDraw(Canvas)}
@@ -284,9 +307,10 @@ public class GameView extends View {
         mBoardPaint.setStrokeWidth(mBorderStroke*2);
         canvas.drawLine(0, 0, 0, mGameHeight, mBoardPaint);
         canvas.drawLine(0, 0, mGameWidth, 0, mBoardPaint);
+
+        mBoardPaint.setStrokeWidth(mBorderStroke);
         canvas.drawLine(mGameWidth, 0, mGameWidth, mGameHeight, mBoardPaint);
         canvas.drawLine(0, mGameHeight, mGameWidth, mGameHeight, mBoardPaint);
-        mBoardPaint.setStrokeWidth(mBorderStroke);
     }
 
 

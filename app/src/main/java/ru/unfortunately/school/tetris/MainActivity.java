@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
         GameViewAdapter adapter = new GameViewAdapter();
         adapter.setGameSpeed(1000);
         mGameView.setAdapter(adapter);
+
     }
 
     @Override

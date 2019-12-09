@@ -40,6 +40,7 @@ public class FigureModel {
         return res;
     }
 
+
     public void transposeToLeft(){
         int[] shape = getShape();
         for (GameRect rect : mRects) {

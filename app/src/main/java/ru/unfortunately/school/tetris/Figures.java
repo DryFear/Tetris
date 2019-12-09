@@ -14,7 +14,7 @@ public class Figures {
         Color.RED,
         Color.GRAY,
         Color.GREEN,
-        Color.BLACK,
+        Color.CYAN,
         Color.BLUE,
         Color.MAGENTA
     };

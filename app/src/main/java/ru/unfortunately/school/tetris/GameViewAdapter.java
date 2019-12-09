@@ -3,6 +3,7 @@ package ru.unfortunately.school.tetris;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.graphics.Point;
+import android.util.Log;
 import android.view.animation.LinearInterpolator;
 
 import java.util.ArrayList;
@@ -19,8 +20,8 @@ public class GameViewAdapter{
     private static final String TAG = "GameViewLogCatTag";
     private GameView mGameView;
 
-    public static final int FLAG_MOVE_TO_LEFT = 0;
-    public static final int FLAG_MOVE_TO_RIGHT = 1;
+    public static final int FLAG_MOVE_TO_LEFT   = 0;
+    public static final int FLAG_MOVE_TO_RIGHT  = 1;
 
     //Todo: при повороте может произойти конфликт в потоках
     private FigureModel mCurrentFigure;
@@ -28,6 +29,7 @@ public class GameViewAdapter{
     private List<GameRect> mDroppedRects;
     private int mGameSpeed;
     private ValueAnimator mAnimator;
+    private boolean mIsBoost = false;
 
 
     public void startGame(){
@@ -46,7 +48,7 @@ public class GameViewAdapter{
     public void setGameSpeed(int gameSpeed) {
         mGameSpeed = gameSpeed;
         //Todo: хардкод. Переделать по-человечески
-        mGameSpeed = 340;
+        mGameSpeed = 1000;
     }
 
 
@@ -54,18 +56,29 @@ public class GameViewAdapter{
         mAnimator.addUpdateListener(new AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-
-                if(touchCheck()){
+                int value = (int)animation.getAnimatedValue();
+                mCurrentPoint.y = value;
+                if(mIsBoost){
+                    mAnimator.pause();
+                    boost(value);
+                }
+                if (touchCheck()) {
                     mAnimator.cancel();
                     onTouch();
                     mAnimator.start();
                 }
-
-                mCurrentPoint.y = (int)animation.getAnimatedValue();
                 sendRectsToView();
             }
         });
         mAnimator.start();
+    }
+
+    private void boost(int value){
+        while (!touchCheck()){
+            mCurrentPoint.y++;
+            Log.i(TAG, "boost: " + mCurrentPoint.y);
+        }
+        mIsBoost = false;
     }
 
     private void sendRectsToView() {
@@ -175,6 +188,7 @@ public class GameViewAdapter{
         return false;
     }
 
+    //TODO: При свайпе фигуры могут наложиться друг на друга. Добавить проверку на возможность
     public void swipeRight(){
         mCurrentFigure.transposeToRight();
     }
@@ -189,5 +203,9 @@ public class GameViewAdapter{
             sendRectsToView();
         }
 
+    }
+
+    public void swipeDown() {
+        mIsBoost = true;
     }
 }
