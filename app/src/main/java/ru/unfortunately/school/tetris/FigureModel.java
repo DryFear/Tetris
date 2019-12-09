@@ -1,5 +1,8 @@
 package ru.unfortunately.school.tetris;
 
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.Canvas;
 import android.graphics.Point;
 
 import java.util.ArrayList;
@@ -57,5 +60,12 @@ public class FigureModel {
             int x = shape[Y_INDEX] - rect.getCoordinate().y;
             rect.setCoordinate(new Point(x, y));
         }
+    }
+
+    public static Bitmap getBitmap(int width, int height, FigureModel figure){
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Config.RGB_565);
+        Canvas canvas = new Canvas(bitmap);
+        //TODO: Нарисовать фигуру на битмапе
+        return bitmap;
     }
 }

@@ -4,37 +4,32 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+                                implements IMainActivity{
 
-    private GameView mGameView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if(savedInstanceState == null){
+            getSupportFragmentManager().beginTransaction()
+                    .addToBackStack(null)
+                    .add(R.id.root, MainMenuFragment.newInstance())
+                    .commit();
+        }
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        setUpGameView();
-    }
-
-
-    /**
-     * Настройка игрового поля и добавление для него адаптера
-     */
-
-    private void setUpGameView() {
-        mGameView = findViewById(R.id.game_view);
-        GameViewAdapter adapter = new GameViewAdapter();
-        adapter.setGameSpeed(1000);
-        mGameView.setAdapter(adapter);
-
+    public void startGame() {
+        getSupportFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .replace(R.id.root, GameFragment.newInstance())
+                .commit();
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    public void backToMainMenu() {
+
     }
 }

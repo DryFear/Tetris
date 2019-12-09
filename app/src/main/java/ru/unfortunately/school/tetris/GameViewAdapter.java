@@ -60,7 +60,7 @@ public class GameViewAdapter{
                 mCurrentPoint.y = value;
                 if(mIsBoost){
                     mAnimator.pause();
-                    boost(value);
+                    boost();
                 }
                 if (touchCheck()) {
                     mAnimator.cancel();
@@ -73,7 +73,7 @@ public class GameViewAdapter{
         mAnimator.start();
     }
 
-    private void boost(int value){
+    private void boost(){
         while (!touchCheck()){
             mCurrentPoint.y++;
             Log.i(TAG, "boost: " + mCurrentPoint.y);
@@ -95,8 +95,9 @@ public class GameViewAdapter{
         for (GameRect rect : rects) {
             mDroppedRects.add(rect.getGameRectInAbsoluteCoolrinates(mCurrentPoint));
         }
-        setNewRandomFigure();
         deleteRows();
+        sendRectsToView();
+        setNewRandomFigure();
     }
 
     private void deleteRows() {
