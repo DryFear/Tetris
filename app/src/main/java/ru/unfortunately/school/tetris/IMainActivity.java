@@ -6,4 +6,8 @@ public interface IMainActivity {
 
     void backToMainMenu();
 
+    void resumeGame();
+
+    void pauseGame();
+
 }

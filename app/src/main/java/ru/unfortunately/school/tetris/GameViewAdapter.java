@@ -5,6 +5,7 @@ import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.graphics.Point;
 import android.util.Log;
 import android.view.animation.LinearInterpolator;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -30,6 +31,8 @@ public class GameViewAdapter{
     private int mGameSpeed;
     private ValueAnimator mAnimator;
     private boolean mIsBoost = false;
+
+    private ImageView mNextFigureImageView;
 
 
     public void startGame(){
@@ -153,6 +156,12 @@ public class GameViewAdapter{
         Random random = new Random();
         mCurrentFigure = figures.get(random.nextInt(figures.size()));
         mCurrentPoint = new Point(GameView.WIDTH_IN_BLOCKS /2, 0);
+        mNextFigureImageView.setImageBitmap(
+                FigureModel.getBitmap(
+                        50,
+                        50,
+                        mCurrentFigure
+                ));
     }
 
     public void moveFigureToRight(){
@@ -189,6 +198,7 @@ public class GameViewAdapter{
         return false;
     }
 
+
     //TODO: При свайпе фигуры могут наложиться друг на друга. Добавить проверку на возможность
     public void swipeRight(){
         mCurrentFigure.transposeToRight();
@@ -208,5 +218,9 @@ public class GameViewAdapter{
 
     public void swipeDown() {
         mIsBoost = true;
+    }
+
+    public void setNextFigureImageView(ImageView nextFigureImage) {
+        mNextFigureImageView = nextFigureImage;
     }
 }

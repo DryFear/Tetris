@@ -11,22 +11,35 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <Button
+        <TextView
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            tools:text="10000"
+            android:layout_gravity="center_vertical"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
-        <Button
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"/>
+        <ImageView
+            android:id="@+id/img_next_figure"
+            android:background="#FFFFFF"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@mipmap/ic_launcher"/>
 
-        <Button
+        <ImageButton
+            android:id="@+id/btn_pause"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_pause_black_24dp"/>
 
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/pause_root"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <ru.unfortunately.school.tetris.GameView
         android:id="@+id/game_view"

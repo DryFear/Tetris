@@ -3,6 +3,9 @@ package ru.unfortunately.school.tetris;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.graphics.Point;
 
 import java.util.ArrayList;
@@ -65,7 +68,30 @@ public class FigureModel {
     public static Bitmap getBitmap(int width, int height, FigureModel figure){
         Bitmap bitmap = Bitmap.createBitmap(width, height, Config.RGB_565);
         Canvas canvas = new Canvas(bitmap);
-        //TODO: Нарисовать фигуру на битмапе
+        Paint paint = new Paint();
+        canvas.drawColor(Color.WHITE);
+        int rectH = height/(figure.getShape()[Y_INDEX]+1);
+        int rectW = height/(figure.getShape()[X_INDEX]+1);
+        int rectLen = Math.min(rectH, rectW);
+
+        canvas.translate(width/4, height/4);
+        rectLen /= 2;
+
+        for(GameRect rect : figure.getRects()){
+            Point coord = rect.getCoordinate();
+            int l = coord.x * rectLen;
+            int t = coord.y * rectLen;
+            int r = l + rectLen;
+            int b = t + rectLen;
+            paint.setColor(rect.getColor());
+            paint.setStyle(Style.FILL);
+            canvas.drawRect(l, t, r, b, paint);
+
+            paint.setColor(Color.BLACK);
+            paint.setStyle(Style.STROKE);
+            canvas.drawRect(l, t, r, b, paint);
+
+        }
         return bitmap;
     }
 }

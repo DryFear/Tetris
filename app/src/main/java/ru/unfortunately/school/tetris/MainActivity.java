@@ -8,6 +8,8 @@ public class MainActivity extends AppCompatActivity
                                 implements IMainActivity{
 
 
+    private GameFragment mGameFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,14 +24,33 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void startGame() {
+        mGameFragment = GameFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
                 .addToBackStack(null)
-                .replace(R.id.root, GameFragment.newInstance())
+                .replace(R.id.root, mGameFragment)
                 .commit();
     }
 
     @Override
     public void backToMainMenu() {
+        getSupportFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .replace(R.id.root, MainMenuFragment.newInstance())
+                .commit();
+    }
 
+    @Override
+    public void resumeGame() {
+        getSupportFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .replace(R.id.root, mGameFragment)
+                .commit();
+    }
+
+    @Override
+    public void pauseGame() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.pause_root, PauseFragment.newInstance())
+                .commit();
     }
 }
