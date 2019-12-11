@@ -19,6 +19,8 @@ public class MainMenuFragment extends Fragment {
 
     private WeakReference<IMainActivity> mMainActivityRef;
     private Button mStartGameButton;
+    private Button mToOptionsButton;
+    private Button mToRecordsButton;
 
     public static MainMenuFragment newInstance() {
 
@@ -43,16 +45,33 @@ public class MainMenuFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_menu, container, false);
-        setUpButton(view);
+        mStartGameButton = view.findViewById(R.id.btn_start_game);
+        mToOptionsButton = view.findViewById(R.id.btn_options);
+        mToRecordsButton = view.findViewById(R.id.btn_records);
+        setUpButtons();
         return view;
     }
 
-    private void setUpButton(View view){
-        mStartGameButton = view.findViewById(R.id.btn_start_game);
+    private void setUpButtons(){
+
         mStartGameButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 mMainActivityRef.get().startGame();
+            }
+        });
+
+        mToOptionsButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMainActivityRef.get().toOptions();
+            }
+        });
+
+        mToRecordsButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMainActivityRef.get().toRecords();
             }
         });
     }

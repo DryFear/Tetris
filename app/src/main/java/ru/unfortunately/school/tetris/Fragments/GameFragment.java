@@ -1,5 +1,6 @@
 package ru.unfortunately.school.tetris.Fragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,12 +15,15 @@ import java.lang.ref.WeakReference;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 import ru.unfortunately.school.tetris.Game.GameView;
 import ru.unfortunately.school.tetris.Game.GameViewAdapter;
+import ru.unfortunately.school.tetris.GameOverListener;
 import ru.unfortunately.school.tetris.IMainActivity;
 import ru.unfortunately.school.tetris.R;
+import ru.unfortunately.school.tetris.SetScoreListener;
 
-public class GameFragment extends Fragment {
+public class GameFragment extends Fragment implements GameOverListener, SetScoreListener {
 
     private GameView mGameView;
     private ImageView mNextFigureImageView;
@@ -27,10 +31,10 @@ public class GameFragment extends Fragment {
     private WeakReference<IMainActivity> mMainActivityRef;
     private GameViewAdapter mGameAdapter;
     private TextView mScoreView;
-
+    private SharedPreferences mPreferences;
+    private static final int DEFAULT_DIFFICULT = 2000;
 
     private GameFragment(){
-
     }
 
     public static GameFragment newInstance() {
@@ -50,14 +54,18 @@ public class GameFragment extends Fragment {
         mNextFigureImageView = view.findViewById(R.id.img_next_figure);
         mPauseButton = view.findViewById(R.id.btn_pause);
         mScoreView = view.findViewById(R.id.txt_score);
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
         return view;
     }
 
 
     private void setUpGameView() {
-        mGameAdapter = new GameViewAdapter();
-        mGameAdapter.setGameSpeed(1000);
-        mGameAdapter.setScoreView(mScoreView);
+        mGameAdapter = new GameViewAdapter(this, this);
+        mGameAdapter.setGameSpeed(mPreferences.getInt(
+                getResources().getString(R.string.difficult_key_preference),
+                DEFAULT_DIFFICULT
+
+        ));
         mGameAdapter.setNextFigureImageView(mNextFigureImageView);
         mGameView.setAdapter(mGameAdapter);
     }
@@ -85,5 +93,15 @@ public class GameFragment extends Fragment {
 
     public GameViewAdapter getGameAdapter(){
         return mGameAdapter;
+    }
+
+    @Override
+    public void onGameOver() {
+        mMainActivityRef.get().endGame();
+    }
+
+    @Override
+    public void setScore(int score) {
+        mScoreView.setText(getResources().getString(R.string.score_n, score));
     }
 }

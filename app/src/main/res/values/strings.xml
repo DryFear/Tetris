@@ -4,4 +4,15 @@
     <string name="pause">Пауза</string>
     <string name="resume">Продолжить</string>
     <string name="exit">Выход</string>
+    <string name="game_over">Игра окончена</string>
+    <string name="restart">Начать заново</string>
+    <string name="options">Настройки</string>
+    <string name="records">Рекорды</string>
+    <string name="name_title_preference">Никнейм</string>
+    <string name="name_summary_preference">Введите ваш ник</string>
+    <string name="score_n">Score:\n%d</string>
+    <string name="difficult_summary_preference">Выберите сложность</string>
+    <string name="difficult_title_preference">Сложность</string>
+    <string name="multi_select_title_preference">Цветовая палитра</string>
+    <string name="multi_select_summary_preference">Выберите цветовую палитру</string>
 </resources>

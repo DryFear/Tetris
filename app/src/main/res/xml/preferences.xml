@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        app:key="@string/name_key_preference"
+        app:title="@string/name_title_preference"
+        app:summary="@string/name_summary_preference"
+        app:defaultValue="Player"/>
+
+    <SeekBarPreference
+        app:key="@string/difficult_key_preference"
+        app:title="@string/difficult_title_preference"
+        app:summary="@string/difficult_summary_preference"
+        app:min="1"
+        android:max="10"
+        app:defaultValue="true"/>
+
+<!--    <MultiSelectListPreference-->
+<!--        app:key="@string/multi_select_key_preference"-->
+<!--        app:title="@string/multi_select_title_preference"-->
+<!--        app:summary="@string/multi_select_summary_preference">-->
+<!--    </MultiSelectListPreference>-->
+
+<!--    <CheckBoxPreference-->
+<!--        app:key="123"-->
+<!--        app:title="asdasd" />-->
+
+
+
+
+</PreferenceScreen>

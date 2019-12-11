@@ -6,27 +6,29 @@ import android.graphics.Point;
 import android.util.Log;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import ru.unfortunately.school.tetris.GameOverListener;
 import ru.unfortunately.school.tetris.Models.FigureModel;
 import ru.unfortunately.school.tetris.Models.Figures;
 import ru.unfortunately.school.tetris.Models.GameRect;
+import ru.unfortunately.school.tetris.SetScoreListener;
 
 
 public class GameViewAdapter{
 
     private static final String TAG = "GameViewLogCatTag";
+    private static final int MIN_SPEED = 1000;
+    private boolean mGameRunningFlag = false;
     private GameView mGameView;
 
     public static final int FLAG_MOVE_TO_LEFT   = 0;
     public static final int FLAG_MOVE_TO_RIGHT  = 1;
 
-    //Todo: при повороте может произойти конфликт в потоках
     private FigureModel mCurrentFigure;
     private FigureModel mNextFigure;
     private Point mCurrentPoint;
@@ -39,12 +41,22 @@ public class GameViewAdapter{
 
     private final static int SCORE_STEP = 10;
     private int mCurrentScore;
-    private TextView mScoreView;
+    private SetScoreListener mScoreListener;
+    private GameOverListener mGameOverListener;
+
+    public GameViewAdapter(GameOverListener gameOverListener, SetScoreListener scoreListener){
+        mGameOverListener = gameOverListener;
+        mScoreListener = scoreListener;
+
+    }
 
     public void startGame(){
-        setNewRandomFigure(true);
-        mCurrentScore = 0;
         mDroppedRects = new LinkedList<>();
+        mCurrentScore = 0;
+        mScoreListener.setScore(mCurrentScore);
+        mGameRunningFlag = true;
+        setNewRandomFigure(true);
+
         mAnimator = ValueAnimator.ofInt(0, GameView.HEIGHT_IN_BLOCKS);
         mAnimator.setDuration(mGameSpeed*GameView.HEIGHT_IN_BLOCKS);
         mAnimator.setInterpolator(new LinearInterpolator());
@@ -56,9 +68,7 @@ public class GameViewAdapter{
     }
 
     public void setGameSpeed(int gameSpeed) {
-        mGameSpeed = gameSpeed;
-        //Todo: хардкод. Переделать по-человечески
-        mGameSpeed = 1000;
+        mGameSpeed = MIN_SPEED/gameSpeed;
     }
 
 
@@ -66,18 +76,21 @@ public class GameViewAdapter{
         mAnimator.addUpdateListener(new AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                int value = (int)animation.getAnimatedValue();
-                mCurrentPoint.y = value;
-                if(mIsBoost){
-                    mAnimator.pause();
-                    boost();
+                if(mGameRunningFlag) {
+                    int value = (int) animation.getAnimatedValue();
+                    mCurrentPoint.y = value;
+                    if (mIsBoost) {
+                        mAnimator.pause();
+                        boost();
+                    }
+                    if (touchCheck()) {
+                        mAnimator.cancel();
+                        Log.i(TAG, "onAnimationUpdate: ");
+                        onTouch();
+                        mAnimator.start();
+                    }
+                    sendRectsToView();
                 }
-                if (touchCheck()) {
-                    mAnimator.cancel();
-                    onTouch();
-                    mAnimator.start();
-                }
-                sendRectsToView();
             }
         });
         mAnimator.start();
@@ -128,7 +141,7 @@ public class GameViewAdapter{
                 }
             }
         }
-        mScoreView.setText(String.valueOf(mCurrentScore));
+        mScoreListener.setScore(mCurrentScore);
     }
 
     private boolean checkFillRow(int row){
@@ -175,10 +188,22 @@ public class GameViewAdapter{
                         50,
                         mNextFigure
                 ));
+        if(touchCheck()){
+            gameOver();
+        }
+    }
+
+    private void gameOver(){
+        mGameRunningFlag = false;
+        mAnimator.pause();
+        mAnimator.cancel();
+        if(mAnimator.isRunning()){
+            Log.i(TAG, "gameOver: ");
+        }
+        mGameOverListener.onGameOver();
     }
 
     public void moveFigureToRight(){
-        //TODO: здесь тоже некрасивая "-1"
         if(mCurrentFigure.getShape()[FigureModel.X_INDEX] + mCurrentPoint.x < GameView.WIDTH_IN_BLOCKS - 1
                     && !checkIfNearBlocks(FLAG_MOVE_TO_RIGHT)){
             mCurrentPoint.x++;
@@ -215,10 +240,28 @@ public class GameViewAdapter{
     //TODO: При свайпе фигуры могут наложиться друг на друга. Добавить проверку на возможность
     public void swipeRight(){
         mCurrentFigure.transposeToRight();
+        int saveX = mCurrentPoint.x;
+        while (touchCheck() || mCurrentPoint.x +
+                mCurrentFigure.getShape()[FigureModel.X_INDEX] > GameView.WIDTH_IN_BLOCKS - 1){
+            mCurrentPoint.x--;
+        }
+        if(mCurrentPoint.x < 0){
+            mCurrentFigure.transposeToLeft();
+            mCurrentPoint.x = saveX;
+        }
     }
 
     public void swipeLeft(){
         mCurrentFigure.transposeToLeft();
+        int saveX = mCurrentPoint.x;
+        while (touchCheck() || mCurrentPoint.x +
+                mCurrentFigure.getShape()[FigureModel.X_INDEX] > GameView.WIDTH_IN_BLOCKS - 1){
+            mCurrentPoint.x--;
+        }
+        if(mCurrentPoint.x < 0){
+            mCurrentFigure.transposeToRight();
+            mCurrentPoint.x = saveX;
+        }
     }
 
     public void moveFigureToLeft(){
@@ -227,11 +270,6 @@ public class GameViewAdapter{
             sendRectsToView();
         }
 
-    }
-
-    public void setScoreView(TextView view){
-        mScoreView = view;
-        mScoreView.setText(String.valueOf(mCurrentScore));
     }
 
     public void pauseGame(){

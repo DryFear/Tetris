@@ -275,7 +275,6 @@ public class GameView extends View {
              *
              * Аналогично со свпйпом вправо и {@link GameViewAdapter#swipeRight()}
              *
-             * TODO: Сделать определение свайпа менее чувствительным и добавить свайп вниз для ускорения фигуры
              */
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {

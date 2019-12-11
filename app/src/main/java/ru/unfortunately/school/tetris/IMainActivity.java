@@ -10,4 +10,10 @@ public interface IMainActivity {
 
     void pauseGame();
 
+    void endGame();
+
+    void toOptions();
+
+    void toRecords();
+
 }

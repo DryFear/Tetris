@@ -1,11 +1,14 @@
 package ru.unfortunately.school.tetris;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import ru.unfortunately.school.tetris.Fragments.GameFragment;
+import ru.unfortunately.school.tetris.Fragments.GameOverFragment;
 import ru.unfortunately.school.tetris.Fragments.MainMenuFragment;
 import ru.unfortunately.school.tetris.Fragments.PauseFragment;
+import ru.unfortunately.school.tetris.Fragments.PreferenceScreenFragment;
 
 public class MainActivity extends AppCompatActivity
                                 implements IMainActivity{
@@ -37,7 +40,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void backToMainMenu() {
         getSupportFragmentManager().beginTransaction()
-                .addToBackStack(null)
                 .replace(R.id.root, MainMenuFragment.newInstance())
                 .commit();
     }
@@ -45,7 +47,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void resumeGame() {
         getSupportFragmentManager().beginTransaction()
-                .addToBackStack(null)
                 .replace(R.id.root, mGameFragment)
                 .commit();
         mGameFragment.getGameAdapter().resumeGame();
@@ -57,5 +58,25 @@ public class MainActivity extends AppCompatActivity
                 .add(R.id.root, PauseFragment.newInstance())
                 .commit();
         mGameFragment.getGameAdapter().pauseGame();
+    }
+
+    @Override
+    public void endGame() {
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.root, GameOverFragment.newInstance())
+                .commit();
+    }
+
+    @Override
+    public void toOptions() {
+        getSupportFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .replace(R.id.root, PreferenceScreenFragment.newInstance(null))
+                .commit();
+    }
+
+    @Override
+    public void toRecords() {
+        Toast.makeText(this, "Пока недоступно", Toast.LENGTH_SHORT).show();
     }
 }
