@@ -3,4 +3,12 @@
     <string name="name_key_preference">name_key</string>
     <string name="difficult_key_preference">difficult_key_preference</string>
     <string name="multi_select_key_preference">multi_select_key_preference</string>
+    <string name="color_list_key_preference">color_list_key_preference</string>
+
+    <string-array name="color_values">
+        <item>default</item>
+        <item>black_white</item>
+        <item>rainbow</item>
+        <item>white</item>
+    </string-array>
 </resources>

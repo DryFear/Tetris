@@ -108,6 +108,12 @@ public class GameView extends View {
 
 
     /**
+     * Флаг, началась игра или нет
+     */
+
+    private boolean mIsGameStarted = false;
+
+    /**
      * Стандартные конструкторы View
      */
     public GameView(Context context) {
@@ -151,7 +157,6 @@ public class GameView extends View {
     public void setAdapter(GameViewAdapter adapter){
         mAdapter = adapter;
         mAdapter.setGameView(this);
-        mAdapter.startGame();
     }
 
     /**
@@ -189,6 +194,7 @@ public class GameView extends View {
         setMeasuredDimension(mGameWidth, mGameHeight);
     }
 
+
     /**
      * В этом методе меняется только длина и ширина блока на основе
      * установленных размеров поля
@@ -215,6 +221,10 @@ public class GameView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        if(!mIsGameStarted){
+            mIsGameStarted = true;
+            mAdapter.startGame();
+        }
         drawBoards(canvas);
         drawRects(canvas);
     }

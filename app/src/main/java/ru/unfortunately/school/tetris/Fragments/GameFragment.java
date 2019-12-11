@@ -1,6 +1,7 @@
 package ru.unfortunately.school.tetris.Fragments;
 
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,14 +17,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
+import ru.unfortunately.school.tetris.Game.GameListeners.FigureChangeListener;
+import ru.unfortunately.school.tetris.Game.GameListeners.GameOverListener;
+import ru.unfortunately.school.tetris.Game.GameListeners.SetScoreListener;
 import ru.unfortunately.school.tetris.Game.GameView;
 import ru.unfortunately.school.tetris.Game.GameViewAdapter;
-import ru.unfortunately.school.tetris.GameOverListener;
 import ru.unfortunately.school.tetris.IMainActivity;
+import ru.unfortunately.school.tetris.Models.FigureModel;
+import ru.unfortunately.school.tetris.Models.Figures;
 import ru.unfortunately.school.tetris.R;
-import ru.unfortunately.school.tetris.SetScoreListener;
 
-public class GameFragment extends Fragment implements GameOverListener, SetScoreListener {
+public class GameFragment extends Fragment
+        implements GameOverListener, SetScoreListener, FigureChangeListener {
 
     private GameView mGameView;
     private ImageView mNextFigureImageView;
@@ -34,8 +39,10 @@ public class GameFragment extends Fragment implements GameOverListener, SetScore
     private SharedPreferences mPreferences;
     private static final int DEFAULT_DIFFICULT = 2000;
 
-    private GameFragment(){
-    }
+    private int mNextFigureWidth = 0;
+    private int mNextFigureHeight = 0;
+
+
 
     public static GameFragment newInstance() {
 
@@ -54,19 +61,18 @@ public class GameFragment extends Fragment implements GameOverListener, SetScore
         mNextFigureImageView = view.findViewById(R.id.img_next_figure);
         mPauseButton = view.findViewById(R.id.btn_pause);
         mScoreView = view.findViewById(R.id.txt_score);
-        mPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
+
         return view;
     }
 
 
     private void setUpGameView() {
-        mGameAdapter = new GameViewAdapter(this, this);
+        mGameAdapter = new GameViewAdapter(this, this, this);
         mGameAdapter.setGameSpeed(mPreferences.getInt(
                 getResources().getString(R.string.difficult_key_preference),
                 DEFAULT_DIFFICULT
 
         ));
-        mGameAdapter.setNextFigureImageView(mNextFigureImageView);
         mGameView.setAdapter(mGameAdapter);
     }
 
@@ -87,8 +93,38 @@ public class GameFragment extends Fragment implements GameOverListener, SetScore
         }else{
             throw new RuntimeException("Illegal instance if Activity");
         }
+        setUpPreference();
         setUpGameView();
         setUpButton();
+    }
+
+    private void setUpPreference() {
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
+        String colorValue = mPreferences.getString(getResources().getString(R.string.color_list_key_preference), null);
+        if(colorValue == null) return;
+        String[] colorSetNames = getResources().getStringArray(R.array.color_values);
+        int[] colors;
+        switch (colorValue){
+            case "default":
+                colors = getResources().getIntArray(R.array.default_color_set);
+                Figures.setColors(colors);
+                break;
+            case "black_white":
+                colors = getResources().getIntArray(R.array.white_black_color_set);
+                Figures.setColors(colors);
+                break;
+            case "rainbow":
+                colors = getResources().getIntArray(R.array.rainbow_color_set);
+                Figures.setColors(colors);
+                break;
+            case "white":
+                colors = getResources().getIntArray(R.array.white_color_set);
+                Figures.setColors(colors);
+                break;
+            default:
+                throw new RuntimeException("Illegal color value");
+        }
+
     }
 
     public GameViewAdapter getGameAdapter(){
@@ -103,5 +139,18 @@ public class GameFragment extends Fragment implements GameOverListener, SetScore
     @Override
     public void setScore(int score) {
         mScoreView.setText(getResources().getString(R.string.score_n, score));
+    }
+
+    @Override
+    public void onNextFigureChange(@NonNull FigureModel figure) {
+        if(mNextFigureHeight == 0){
+            mNextFigureHeight = mNextFigureImageView.getHeight();
+        }
+        if(mNextFigureWidth == 0){
+            mNextFigureWidth = mNextFigureImageView.getWidth();
+        }
+        Bitmap bitmap;
+        bitmap = FigureModel.getBitmap(mNextFigureWidth, mNextFigureHeight, figure);
+        mNextFigureImageView.setImageBitmap(bitmap);
     }
 }

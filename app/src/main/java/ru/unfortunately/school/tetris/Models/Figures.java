@@ -20,10 +20,10 @@ public class Figures {
     };
 
 
-    public static final List<FigureModel> ALL_FIGURES = getFigures();
+    private static List<FigureModel> sAllFigures = getFigures();
 
     public static List<FigureModel> getAllFigures(){
-        return new ArrayList<>(ALL_FIGURES);
+        return new ArrayList<>(sAllFigures);
     }
 
     private static List<FigureModel> getFigures(){
@@ -38,6 +38,16 @@ public class Figures {
         list.add(new FigureModel(Arrays.asList(new Point(0,0), new Point(0,1), new Point(1,0), new Point(1,1)), sColors[6]));
 
         return list;
+    }
+
+    public static void refreshFigures(){
+        sAllFigures = getFigures();
+    }
+
+    public static void setColors(int[] colors){
+        if(colors.length < 7) throw new RuntimeException("Invalid array of color size");
+        sColors = colors;
+        refreshFigures();
     }
 
 }

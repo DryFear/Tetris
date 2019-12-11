@@ -1,4 +1,4 @@
-package ru.unfortunately.school.tetris;
+package ru.unfortunately.school.tetris.Game.GameListeners;
 
 public interface SetScoreListener {
 

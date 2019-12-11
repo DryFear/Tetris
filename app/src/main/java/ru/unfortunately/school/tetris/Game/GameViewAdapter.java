@@ -5,18 +5,18 @@ import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.graphics.Point;
 import android.util.Log;
 import android.view.animation.LinearInterpolator;
-import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import ru.unfortunately.school.tetris.GameOverListener;
+import ru.unfortunately.school.tetris.Game.GameListeners.FigureChangeListener;
+import ru.unfortunately.school.tetris.Game.GameListeners.GameOverListener;
+import ru.unfortunately.school.tetris.Game.GameListeners.SetScoreListener;
 import ru.unfortunately.school.tetris.Models.FigureModel;
 import ru.unfortunately.school.tetris.Models.Figures;
 import ru.unfortunately.school.tetris.Models.GameRect;
-import ru.unfortunately.school.tetris.SetScoreListener;
 
 
 public class GameViewAdapter{
@@ -37,17 +37,18 @@ public class GameViewAdapter{
     private ValueAnimator mAnimator;
     private boolean mIsBoost = false;
 
-    private ImageView mNextFigureImageView;
-
     private final static int SCORE_STEP = 10;
     private int mCurrentScore;
     private SetScoreListener mScoreListener;
     private GameOverListener mGameOverListener;
+    private FigureChangeListener mFigureChangeListener;
 
-    public GameViewAdapter(GameOverListener gameOverListener, SetScoreListener scoreListener){
+    public GameViewAdapter(GameOverListener gameOverListener,
+                           SetScoreListener scoreListener,
+                           FigureChangeListener figureChangeListener){
         mGameOverListener = gameOverListener;
         mScoreListener = scoreListener;
-
+        mFigureChangeListener = figureChangeListener;
     }
 
     public void startGame(){
@@ -182,12 +183,7 @@ public class GameViewAdapter{
         mCurrentFigure = mNextFigure;
         mCurrentPoint = new Point(GameView.WIDTH_IN_BLOCKS /2, 0);
         mNextFigure = figures.get(random.nextInt(figures.size()));
-        mNextFigureImageView.setImageBitmap(
-                FigureModel.getBitmap(
-                        50,
-                        50,
-                        mNextFigure
-                ));
+        mFigureChangeListener.onNextFigureChange(mNextFigure);
         if(touchCheck()){
             gameOver();
         }
@@ -284,7 +280,4 @@ public class GameViewAdapter{
         mIsBoost = true;
     }
 
-    public void setNextFigureImageView(ImageView nextFigureImage) {
-        mNextFigureImageView = nextFigureImage;
-    }
 }

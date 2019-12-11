@@ -15,4 +15,15 @@
     <string name="difficult_title_preference">Сложность</string>
     <string name="multi_select_title_preference">Цветовая палитра</string>
     <string name="multi_select_summary_preference">Выберите цветовую палитру</string>
+    <string name="color_list_summary_preference">Выберите цветовую палитру</string>
+    <string name="color_list_title_preference">Цветовая палитра</string>
+
+
+    <string-array name="color_titles">
+        <item>Стандартный</item>
+        <item>Черно-белый</item>
+        <item>Радужный</item>
+        <item>Белый</item>
+    </string-array>
+
 </resources>

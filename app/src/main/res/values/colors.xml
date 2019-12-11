@@ -5,4 +5,46 @@
     <color name="colorAccent">#D81B60</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+
+    <array name="default_color_set">
+        <item>#FFFF00</item>
+        <item>#FF0000</item>
+        <item>#888888</item>
+        <item>#00FF00</item>
+        <item>#00FFFF</item>
+        <item>#0000FF</item>
+        <item>#FF00FF</item>
+    </array>
+
+    <array name="white_black_color_set">
+        <item>#222222</item>
+        <item>#444444</item>
+        <item>#666666</item>
+        <item>#888888</item>
+        <item>#AAAAAA</item>
+        <item>#CCCCCC</item>
+        <item>#EEEEEE</item>
+    </array>
+
+    <array name="rainbow_color_set">
+        <item>#FF0000</item>
+        <item>#FF8F00</item>
+        <item>#FFFF00</item>
+        <item>#00FF00</item>
+        <item>#008FFF</item>
+        <item>#0000FF</item>
+        <item>#8F00FF</item>
+    </array>
+
+    <array name="white_color_set">
+        <item>#FFFFFF</item>
+        <item>#FFFFFF</item>
+        <item>#FFFFFF</item>
+        <item>#FFFFFF</item>
+        <item>#FFFFFF</item>
+        <item>#FFFFFF</item>
+        <item>#FFFFFF</item>
+    </array>
+
+
 </resources>

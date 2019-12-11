@@ -16,17 +16,13 @@
         android:max="10"
         app:defaultValue="true"/>
 
-<!--    <MultiSelectListPreference-->
-<!--        app:key="@string/multi_select_key_preference"-->
-<!--        app:title="@string/multi_select_title_preference"-->
-<!--        app:summary="@string/multi_select_summary_preference">-->
-<!--    </MultiSelectListPreference>-->
-
-<!--    <CheckBoxPreference-->
-<!--        app:key="123"-->
-<!--        app:title="asdasd" />-->
-
-
+    <ListPreference
+        app:key="@string/color_list_key_preference"
+        app:title="@string/color_list_title_preference"
+        app:summary="@string/color_list_summary_preference"
+        app:entries="@array/color_titles"
+        app:entryValues="@array/color_values"
+        app:defaultValue="default"/>
 
 
 </PreferenceScreen>

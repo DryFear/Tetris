@@ -2,5 +2,7 @@
 <resources>
     <dimen name="medium_margin">16dp</dimen>
     <dimen name="stroke_size">8dp</dimen>
+    <dimen name="stroke_size_small">4dp</dimen>
     <dimen name="corner_radius">24dp</dimen>
+    <dimen name="small_padding">8dp</dimen>
 </resources>

@@ -73,9 +73,8 @@ public class FigureModel {
         int rectH = height/(figure.getShape()[Y_INDEX]+1);
         int rectW = height/(figure.getShape()[X_INDEX]+1);
         int rectLen = Math.min(rectH, rectW);
-
-        canvas.translate(width/4, height/4);
-        rectLen /= 2;
+//        canvas.translate(rectLen/6, rectLen/6);
+        paint.setStrokeWidth(rectLen/6);
 
         for(GameRect rect : figure.getRects()){
             Point coord = rect.getCoordinate();
