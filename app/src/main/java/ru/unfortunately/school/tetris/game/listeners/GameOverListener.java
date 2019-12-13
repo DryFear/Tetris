@@ -1,4 +1,4 @@
-package ru.unfortunately.school.tetris.Game.GameListeners;
+package ru.unfortunately.school.tetris.game.listeners;
 
 public interface GameOverListener {
 

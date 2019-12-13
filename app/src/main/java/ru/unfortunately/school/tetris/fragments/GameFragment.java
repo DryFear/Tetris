@@ -1,8 +1,9 @@
-package ru.unfortunately.school.tetris.Fragments;
+package ru.unfortunately.school.tetris.fragments;
 
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,14 +18,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
-import ru.unfortunately.school.tetris.Game.GameListeners.FigureChangeListener;
-import ru.unfortunately.school.tetris.Game.GameListeners.GameOverListener;
-import ru.unfortunately.school.tetris.Game.GameListeners.SetScoreListener;
-import ru.unfortunately.school.tetris.Game.GameView;
-import ru.unfortunately.school.tetris.Game.GameViewAdapter;
+import ru.unfortunately.school.tetris.game.listeners.FigureChangeListener;
+import ru.unfortunately.school.tetris.game.listeners.GameOverListener;
+import ru.unfortunately.school.tetris.game.listeners.SetScoreListener;
+import ru.unfortunately.school.tetris.game.GameView;
+import ru.unfortunately.school.tetris.game.GameViewAdapter;
 import ru.unfortunately.school.tetris.IMainActivity;
-import ru.unfortunately.school.tetris.Models.FigureModel;
-import ru.unfortunately.school.tetris.Models.Figures;
+import ru.unfortunately.school.tetris.models.FigureModel;
+import ru.unfortunately.school.tetris.models.Figures;
 import ru.unfortunately.school.tetris.R;
 
 public class GameFragment extends Fragment
@@ -98,6 +99,12 @@ public class GameFragment extends Fragment
         setUpButton();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        mGameView.cancelAnimation();
+    }
+
     private void setUpPreference() {
         mPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
         String colorValue = mPreferences.getString(getResources().getString(R.string.color_list_key_preference), null);
@@ -133,7 +140,10 @@ public class GameFragment extends Fragment
 
     @Override
     public void onGameOver() {
-        mMainActivityRef.get().endGame();
+        IMainActivity activity = mMainActivityRef.get();
+        if (activity != null) {
+            mMainActivityRef.get().endGame();
+        }
     }
 
     @Override
@@ -149,6 +159,7 @@ public class GameFragment extends Fragment
         if(mNextFigureWidth == 0){
             mNextFigureWidth = mNextFigureImageView.getWidth();
         }
+        Log.i("TEST", "onNextFigureChange: " + mNextFigureHeight);
         Bitmap bitmap;
         bitmap = FigureModel.getBitmap(mNextFigureWidth, mNextFigureHeight, figure);
         mNextFigureImageView.setImageBitmap(bitmap);

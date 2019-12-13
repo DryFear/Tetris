@@ -1,6 +1,8 @@
-package ru.unfortunately.school.tetris.Game;
+package ru.unfortunately.school.tetris.game;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
@@ -14,8 +16,10 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ru.unfortunately.school.tetris.Models.GameRect;
+import ru.unfortunately.school.tetris.models.GameRect;
+import ru.unfortunately.school.tetris.R;
 
 /**
  * Prod by Unfortunately Still Alive (Александр Воронин)
@@ -49,9 +53,11 @@ public class GameView extends View {
 
     /**
      * Ширина границ игрового поля.
-     * //TODO: Сделать ее настраиваемой через xml
+     *
+     * Настраивается через XML
      */
-    private int mBorderStroke = 10;
+    private int mBorderStroke ;
+    private static final int DEFAULT_BORDER_STROKE = 10;
 
     /**
      * Длина и ширина для одного блока
@@ -102,9 +108,11 @@ public class GameView extends View {
      * Чувствительность свайпа. Указывает сколько блоков в секунду нужно
      * свайпнуть для действия
      *
-     * //TODO: Сделать настраиваемым через XML
+     * Настраивается через XML
+     *
      */
-    private int mSwipeSence = 3;
+    private int mSwipeSense;
+    private static final int DEFAULT_SWIPE_SENSE = 2;
 
 
     /**
@@ -123,16 +131,19 @@ public class GameView extends View {
     public GameView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
+        extractAttributes(context, attrs);
     }
 
     public GameView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
+        extractAttributes(context, attrs);
     }
 
     public GameView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init();
+        extractAttributes(context, attrs);
     }
 
     /**
@@ -142,7 +153,7 @@ public class GameView extends View {
      *
      * @param rects - игровые блоки для отрисовки
      */
-    public void setGameRects(List<GameRect> rects){
+    public void setGameRects(@NonNull List<GameRect> rects){
         mGameRects = rects;
         invalidate();
     }
@@ -151,12 +162,19 @@ public class GameView extends View {
      * Устанавливает адаптер для игры {@link GameView#mAdapter}
      * и настраивает его.
      *
-     * //TODO: Сделать startGame() отдельным методом view
      */
 
-    public void setAdapter(GameViewAdapter adapter){
+    public void setAdapter(@NonNull GameViewAdapter adapter){
         mAdapter = adapter;
         mAdapter.setGameView(this);
+    }
+
+    /**
+     * Метод, который вызывается при onStop() во фрагменте
+     * чтобы избежать утечки анимации
+     */
+    public void cancelAnimation() {
+        mAdapter.cancelAnimation();
     }
 
     /**
@@ -240,9 +258,13 @@ public class GameView extends View {
         mBoardPaint.setAntiAlias(true);
 
         mDetector = new GestureDetector(getContext(), new OnGestureListener() {
+
+            /**
+             * Не обрабатывает касания, если игра не началась
+             */
             @Override
             public boolean onDown(MotionEvent e) {
-                return true;
+                return mIsGameStarted;
             }
 
             @Override
@@ -290,7 +312,7 @@ public class GameView extends View {
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                 float diffX = e2.getX() - e1.getX();
                 float diffY = e2.getY() - e1.getY();
-                float sence = mSwipeSence * mBlockLength;
+                float sence = mSwipeSense * mBlockLength;
                 if(diffY > diffX && diffY > sence){
                     mAdapter.swipeDown();
                 }else{
@@ -342,4 +364,17 @@ public class GameView extends View {
         }
     }
 
+    /**
+     * Извлекает атрибуты из параметров xml
+     */
+    private void extractAttributes(Context context, @Nullable AttributeSet attrs){
+        final Resources.Theme theme = context.getTheme();
+        final TypedArray typedArray = theme.obtainStyledAttributes(attrs, R.styleable.GameView, R.attr.GameViewStyle, 0);
+        try {
+            mBorderStroke = typedArray.getInteger(R.styleable.GameView_border_stroke, DEFAULT_BORDER_STROKE);
+            mSwipeSense = typedArray.getInteger(R.styleable.GameView_swipe_sensitive, DEFAULT_SWIPE_SENSE);
+        }finally {
+            typedArray.recycle();
+        }
+    }
 }

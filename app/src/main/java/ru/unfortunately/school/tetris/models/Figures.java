@@ -1,4 +1,4 @@
-package ru.unfortunately.school.tetris.Models;
+package ru.unfortunately.school.tetris.models;
 
 import android.graphics.Color;
 import android.graphics.Point;
@@ -18,7 +18,6 @@ public class Figures {
         Color.BLUE,
         Color.MAGENTA
     };
-
 
     private static List<FigureModel> sAllFigures = getFigures();
 

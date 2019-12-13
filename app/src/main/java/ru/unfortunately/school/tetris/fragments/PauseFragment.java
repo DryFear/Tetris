@@ -1,4 +1,4 @@
-package ru.unfortunately.school.tetris.Fragments;
+package ru.unfortunately.school.tetris.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BackgroundView">
+        <attr name="block_length" format="dimension"/>
+        <attr name="block_border_stroke_size" format="dimension"/>
+        <attr name="delay" format="integer"/>
+        <attr name="animation_time" format="integer"/>
+    </declare-styleable>
+</resources>

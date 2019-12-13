@@ -1,4 +1,4 @@
-package ru.unfortunately.school.tetris.Models;
+package ru.unfortunately.school.tetris.models;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Point;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,10 +71,18 @@ public class FigureModel {
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint();
         canvas.drawColor(Color.WHITE);
+        //TODO: куча хардкода чисел. Исправить
         int rectH = height/(figure.getShape()[Y_INDEX]+1);
         int rectW = height/(figure.getShape()[X_INDEX]+1);
-        int rectLen = Math.min(rectH, rectW);
-//        canvas.translate(rectLen/6, rectLen/6);
+        int rectLen = Math.min(rectH, rectW) - 15;
+        int centerX = width/2;
+        int centerY = width/2;
+        int startX = (int) (centerX - rectLen * ((figure.getShape()[X_INDEX] + 1)/2.0)) + 6;
+        int startY = (int) (centerY - rectLen * ((figure.getShape()[Y_INDEX] + 2)/2.0)) + 6;
+        Log.i("TEST", "getBitmap: " + height);
+        Log.i("TEST", "getBitmap: " + centerX);
+        Log.i("TEST", "getBitmap: " + startX);
+        canvas.translate(startX, startY);
         paint.setStrokeWidth(rectLen/6);
 
         for(GameRect rect : figure.getRects()){

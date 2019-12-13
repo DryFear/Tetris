@@ -1,4 +1,4 @@
-package ru.unfortunately.school.tetris.Models;
+package ru.unfortunately.school.tetris.models;
 
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -58,7 +58,15 @@ public class GameRect {
         return new Rect(l, t, r, b);
     }
 
-    public GameRect getGameRectInAbsoluteCoolrinates(Point absCoord){
+    public Rect getRectWithScale(int scale){
+        final int l = mCoordinate.x;
+        final int t = mCoordinate.y;
+        final int r = l + scale;
+        final int b = t + scale;
+        return new Rect(l, t, r, b);
+    }
+
+    public GameRect getGameRectInAbsoluteCoordinates(Point absCoord){
         Point point = new Point(mCoordinate);
         point.x += absCoord.x;
         point.y += absCoord.y;

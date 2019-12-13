@@ -4,11 +4,11 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import ru.unfortunately.school.tetris.Fragments.GameFragment;
-import ru.unfortunately.school.tetris.Fragments.GameOverFragment;
-import ru.unfortunately.school.tetris.Fragments.MainMenuFragment;
-import ru.unfortunately.school.tetris.Fragments.PauseFragment;
-import ru.unfortunately.school.tetris.Fragments.PreferenceScreenFragment;
+import ru.unfortunately.school.tetris.fragments.GameFragment;
+import ru.unfortunately.school.tetris.fragments.GameOverFragment;
+import ru.unfortunately.school.tetris.fragments.MainMenuFragment;
+import ru.unfortunately.school.tetris.fragments.PauseFragment;
+import ru.unfortunately.school.tetris.fragments.PreferenceScreenFragment;
 
 public class MainActivity extends AppCompatActivity
                                 implements IMainActivity{

@@ -1,4 +1,4 @@
-package ru.unfortunately.school.tetris.Game;
+package ru.unfortunately.school.tetris.game;
 
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
@@ -11,12 +11,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import ru.unfortunately.school.tetris.Game.GameListeners.FigureChangeListener;
-import ru.unfortunately.school.tetris.Game.GameListeners.GameOverListener;
-import ru.unfortunately.school.tetris.Game.GameListeners.SetScoreListener;
-import ru.unfortunately.school.tetris.Models.FigureModel;
-import ru.unfortunately.school.tetris.Models.Figures;
-import ru.unfortunately.school.tetris.Models.GameRect;
+import ru.unfortunately.school.tetris.game.listeners.FigureChangeListener;
+import ru.unfortunately.school.tetris.game.listeners.GameOverListener;
+import ru.unfortunately.school.tetris.game.listeners.SetScoreListener;
+import ru.unfortunately.school.tetris.models.FigureModel;
+import ru.unfortunately.school.tetris.models.Figures;
+import ru.unfortunately.school.tetris.models.GameRect;
 
 
 public class GameViewAdapter{
@@ -109,7 +109,7 @@ public class GameViewAdapter{
         List<GameRect> rects = new LinkedList<>(mDroppedRects);
         List<GameRect> figureRects = mCurrentFigure.getRects();
         for (GameRect figureRect : figureRects) {
-            rects.add(figureRect.getGameRectInAbsoluteCoolrinates(mCurrentPoint));
+            rects.add(figureRect.getGameRectInAbsoluteCoordinates(mCurrentPoint));
         }
         mGameView.setGameRects(rects);
     }
@@ -117,7 +117,7 @@ public class GameViewAdapter{
     private void onTouch(){
         List<GameRect> rects = mCurrentFigure.getRects();
         for (GameRect rect : rects) {
-            mDroppedRects.add(rect.getGameRectInAbsoluteCoolrinates(mCurrentPoint));
+            mDroppedRects.add(rect.getGameRectInAbsoluteCoordinates(mCurrentPoint));
         }
         deleteRows();
         sendRectsToView();
@@ -163,7 +163,7 @@ public class GameViewAdapter{
         for (GameRect droppedRect : mDroppedRects) {
             List<GameRect> figureRects = mCurrentFigure.getRects();
             for (GameRect figureRect : figureRects) {
-                Point figCoord = figureRect.getGameRectInAbsoluteCoolrinates(mCurrentPoint).getCoordinate();
+                Point figCoord = figureRect.getGameRectInAbsoluteCoordinates(mCurrentPoint).getCoordinate();
                 Point droppedCoord = droppedRect.getCoordinate();
                 if(figCoord.x == droppedCoord.x && figCoord.y + 1 == droppedCoord.y){
                     return true;
@@ -211,7 +211,7 @@ public class GameViewAdapter{
         for (GameRect droppedRect : mDroppedRects) {
             List<GameRect> figureRects = mCurrentFigure.getRects();
             for (GameRect figureRect : figureRects) {
-                Point figCoord = figureRect.getGameRectInAbsoluteCoolrinates(mCurrentPoint).getCoordinate();
+                Point figCoord = figureRect.getGameRectInAbsoluteCoordinates(mCurrentPoint).getCoordinate();
                 Point droppedCoord = droppedRect.getCoordinate();
                 switch (mode){
                     case FLAG_MOVE_TO_LEFT:
@@ -280,4 +280,7 @@ public class GameViewAdapter{
         mIsBoost = true;
     }
 
+    public void cancelAnimation() {
+        mAnimator.cancel();
+    }
 }

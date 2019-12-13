@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="GameView">
+        <attr name="border_stroke" type="integer"/>
+        <attr name="swipe_sensitive" type="integer"/>
+    </declare-styleable>
+
+</resources>
