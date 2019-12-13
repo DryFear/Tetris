@@ -1,7 +1,6 @@
 package ru.unfortunately.school.tetris;
 
 import android.os.Bundle;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import ru.unfortunately.school.tetris.fragments.GameFragment;
@@ -9,6 +8,7 @@ import ru.unfortunately.school.tetris.fragments.GameOverFragment;
 import ru.unfortunately.school.tetris.fragments.MainMenuFragment;
 import ru.unfortunately.school.tetris.fragments.PauseFragment;
 import ru.unfortunately.school.tetris.fragments.PreferenceScreenFragment;
+import ru.unfortunately.school.tetris.fragments.RecordsFragment;
 
 public class MainActivity extends AppCompatActivity
                                 implements IMainActivity{
@@ -22,7 +22,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         if(savedInstanceState == null){
             getSupportFragmentManager().beginTransaction()
-                    .addToBackStack(null)
                     .add(R.id.root, MainMenuFragment.newInstance())
                     .commit();
         }
@@ -77,6 +76,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void toRecords() {
-        Toast.makeText(this, "Пока недоступно", Toast.LENGTH_SHORT).show();
+        getSupportFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .replace(R.id.root, RecordsFragment.newInstance())
+                .commit();
     }
 }

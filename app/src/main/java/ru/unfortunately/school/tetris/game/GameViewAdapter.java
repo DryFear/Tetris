@@ -196,7 +196,7 @@ public class GameViewAdapter{
         if(mAnimator.isRunning()){
             Log.i(TAG, "gameOver: ");
         }
-        mGameOverListener.onGameOver();
+        mGameOverListener.onGameOver(mCurrentScore);
     }
 
     public void moveFigureToRight(){

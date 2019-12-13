@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/small_padding"
+    android:background="@drawable/background_line">
+
+    <TextView
+        android:id="@+id/text_view_place_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_gravity="center_vertical"
+        tools:text="1"/>
+
+    <LinearLayout
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/text_view_record_nickname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextRecords"
+            android:layout_margin="@dimen/medium_margin"
+            tools:text="Player"/>
+
+        <TextView
+            android:id="@+id/text_view_record_score"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextRecords"
+            android:layout_margin="@dimen/medium_margin"
+            tools:text="1000"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/text_view_record_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/medium_margin"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_gravity="center_vertical"
+        tools:text="01.01.2019"/>
+</LinearLayout>

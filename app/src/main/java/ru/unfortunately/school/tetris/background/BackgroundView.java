@@ -87,8 +87,8 @@ public class BackgroundView extends View implements BackgroundViewListener {
             animator.setInterpolator(new LinearInterpolator());
             animator.setStartDelay(mDelay *i);
             animator.setDuration(mAnimationTime);
-            AnimationHelper helper = new AnimationHelper(Figures.getAllFigures().get(i), animator, this, w);
-            helper.setCoord(new Point(mRandom.nextInt(w - mBlockLength*4), h));
+            AnimationHelper helper = new AnimationHelper(Figures.getAllFigures().get(i), animator, this, w, mBlockLength);
+            helper.setCoord(new Point(mRandom.nextInt(w - mBlockLength*4), 2*h));
             mHelpers.add(i, helper);
         }
         for (AnimationHelper helper : mHelpers) {
@@ -117,7 +117,6 @@ public class BackgroundView extends View implements BackgroundViewListener {
             for (GameRect rect : helper.getModel().getRects()) {
                 int x = mBlockLength * rect.getCoordinate().x + helper.getCoord().x;
                 int y = mBlockLength * rect.getCoordinate().y + helper.getCoord().y;
-                Log.i("TEST", "update: " + y);
                 GameRect gameRect = new GameRect(new Point(x, y), rect.getColor());
                 mGameRects.add(gameRect);
             }

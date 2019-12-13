@@ -1,9 +1,10 @@
 package ru.unfortunately.school.tetris.fragments;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,11 +14,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
+import java.util.Date;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
 import ru.unfortunately.school.tetris.IMainActivity;
 import ru.unfortunately.school.tetris.R;
 import ru.unfortunately.school.tetris.game.GameView;
@@ -26,6 +30,9 @@ import ru.unfortunately.school.tetris.game.listeners.FigureChangeListener;
 import ru.unfortunately.school.tetris.game.listeners.GameOverListener;
 import ru.unfortunately.school.tetris.game.listeners.SetScoreListener;
 import ru.unfortunately.school.tetris.models.FigureModel;
+import ru.unfortunately.school.tetris.room.DatabaseMigration;
+import ru.unfortunately.school.tetris.room.Record;
+import ru.unfortunately.school.tetris.room.RecordsDatabase;
 
 public class GameFragment extends Fragment
         implements GameOverListener, SetScoreListener, FigureChangeListener {
@@ -110,11 +117,18 @@ public class GameFragment extends Fragment
     }
 
     @Override
-    public void onGameOver() {
+    public void onGameOver(int score) {
         IMainActivity activity = mMainActivityRef.get();
         if (activity != null) {
             mMainActivityRef.get().endGame();
         }
+        DatabaseInserter inserter = new DatabaseInserter(requireContext());
+        Record record = new Record();
+        record.setDate(new Date());
+        String nickname = mPreferences.getString(getResources().getString(R.string.name_key_preference), "Player");
+        record.setNickname(nickname);
+        record.setScore(score);
+        inserter.execute(record);
     }
 
     @Override
@@ -130,9 +144,33 @@ public class GameFragment extends Fragment
         if(mNextFigureWidth == 0){
             mNextFigureWidth = mNextFigureImageView.getWidth();
         }
-        Log.i("TEST", "onNextFigureChange: " + mNextFigureHeight);
         Bitmap bitmap;
         bitmap = FigureModel.getBitmap(mNextFigureWidth, mNextFigureHeight, figure);
         mNextFigureImageView.setImageBitmap(bitmap);
+    }
+
+    class DatabaseInserter extends AsyncTask<Record, Void, Void>{
+
+        private WeakReference<Context> mContextRef;
+
+        public DatabaseInserter(Context context) {
+            mContextRef = new WeakReference<>(context);
+        }
+
+
+        @Override
+        protected Void doInBackground(Record... records) {
+            Context context = mContextRef.get();
+            if(context != null){
+                RecordsDatabase db;
+                RoomDatabase.Builder<RecordsDatabase> builder = Room.databaseBuilder(context, RecordsDatabase.class, "records.db");
+                builder.addMigrations(new DatabaseMigration(1, 2));
+                db = builder.build();
+                for (Record record : records) {
+                    db.getRecordsDao().addRecord(record);
+                }
+            }
+            return null;
+        }
     }
 }

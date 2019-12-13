@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey;
 @Entity
 public class Record {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     private long mId;
 

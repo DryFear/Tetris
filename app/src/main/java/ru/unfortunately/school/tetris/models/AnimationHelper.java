@@ -16,7 +16,8 @@ public class AnimationHelper {
     private ValueAnimator mAnimator;
     private Point mCoord;
     private BackgroundViewListener mListener;
-    private int mMaxWidth;
+    private int mBlockWidth;
+    private int mFrameWidth;
 
 
     public Point getCoord() {
@@ -28,12 +29,13 @@ public class AnimationHelper {
     }
 
 
-    public AnimationHelper(FigureModel model, ValueAnimator animator, BackgroundViewListener listener, int maxWidth) {
+    public AnimationHelper(FigureModel model, ValueAnimator animator, BackgroundViewListener listener, int frameWidth, int blockWidth) {
         mModel = model;
         mAnimator = animator;
         mCoord = new Point();
         mListener = listener;
-        mMaxWidth = maxWidth;
+        mBlockWidth = blockWidth;
+        mFrameWidth = frameWidth;
         addListeners();
     }
 
@@ -49,7 +51,7 @@ public class AnimationHelper {
             @Override
             public void onAnimationRepeat(Animator animation) {
                 super.onAnimationRepeat(animation);
-                mCoord.x = new Random().nextInt(mMaxWidth);
+                mCoord.x = new Random().nextInt(mFrameWidth - (mModel.getShape()[FigureModel.X_INDEX] + 1)*mBlockWidth);
             }
         });
     }

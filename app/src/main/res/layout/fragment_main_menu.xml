@@ -13,7 +13,7 @@
         app:animation_time="7500"
         app:block_border_stroke_size="4dp"
         app:block_length="40dp"
-        app:delay="1500"/>
+        app:delay="1000"/>
 
     <LinearLayout
         android:id="@+id/linearLayout"
