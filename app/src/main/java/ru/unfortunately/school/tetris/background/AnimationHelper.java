@@ -1,4 +1,4 @@
-package ru.unfortunately.school.tetris.models;
+package ru.unfortunately.school.tetris.background;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -8,7 +8,7 @@ import android.graphics.Point;
 
 import java.util.Random;
 
-import ru.unfortunately.school.tetris.background.BackgroundViewListener;
+import ru.unfortunately.school.tetris.models.FigureModel;
 
 public class AnimationHelper {
 

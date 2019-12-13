@@ -10,7 +10,6 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Point;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
@@ -20,7 +19,6 @@ import java.util.Random;
 
 import androidx.annotation.Nullable;
 import ru.unfortunately.school.tetris.R;
-import ru.unfortunately.school.tetris.models.AnimationHelper;
 import ru.unfortunately.school.tetris.models.Figures;
 import ru.unfortunately.school.tetris.models.GameRect;
 

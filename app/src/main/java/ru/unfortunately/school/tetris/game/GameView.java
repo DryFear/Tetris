@@ -44,6 +44,15 @@ public class GameView extends View {
     public static final int WIDTH_IN_BLOCKS     = 10;
     public static final int HEIGHT_IN_BLOCKS    = 20;
 
+
+    /**
+     * Схемы управления. Задается в preference
+     */
+
+    private static final int MOVE_ON_TAP = 0;
+    private static final int MOVE_ON_SWIPE = 1;
+    private int mControlChema = 0;
+
     /**
      * Длина и ширина игрового поля.
      * Меняется только в onMeasure {@link GameView#onMeasure(int, int)}
@@ -178,6 +187,14 @@ public class GameView extends View {
     }
 
     /**
+     * Настраивает схему управления
+     * @param controlChema порядковый номер схемы из preference
+     */
+    public void setControlChema(int controlChema) {
+        mControlChema = controlChema;
+    }
+
+    /**
      * @return Передает всю обработку касаний детектору (См {@link GameView#mDetector})
      */
     @Override
@@ -275,7 +292,8 @@ public class GameView extends View {
             /**
              * При тапе на левую часть экрана
              * вызывает {@link GameViewAdapter#moveFigureToLeft()}
-             * для перемещения падающей фигуры влево
+             * для перемещения или поворота (зависит от {@link GameView#mControlChema})
+             * падающей фигуры влево
              *
              * Аналогично с правой частью экрана и {@link GameViewAdapter#moveFigureToRight()}
              */
@@ -283,10 +301,26 @@ public class GameView extends View {
             public boolean onSingleTapUp(MotionEvent e) {
                 float x = e.getX();
                 if(x > mGameWidth/2.0){
-                    mAdapter.moveFigureToRight();
+                    switch (mControlChema){
+                        case MOVE_ON_SWIPE:
+                            mAdapter.transposeToRight();
+                            break;
+                        case MOVE_ON_TAP:
+                        default:
+                            mAdapter.moveFigureToRight();
+                            break;
+                    }
                 }
                 else{
-                    mAdapter.moveFigureToLeft();
+                    switch (mControlChema){
+                        case MOVE_ON_SWIPE:
+                            mAdapter.transposeToLeft();
+                            break;
+                        case MOVE_ON_TAP:
+                        default:
+                            mAdapter.moveFigureToLeft();
+                            break;
+                    }
                 }
                 return true;
             }
@@ -302,10 +336,11 @@ public class GameView extends View {
             }
 
             /**
-             * При свайпе влево вызывает {@link GameViewAdapter#swipeLeft()}
-             * для поворота падающей фигуры влево
+             * При свайпе влево вызывает {@link GameViewAdapter#transposeToLeft()}
+             * для поворота или перемещения (зависит от {@link GameView#mControlChema})
+             * падающей фигуры влево
              *
-             * Аналогично со свпйпом вправо и {@link GameViewAdapter#swipeRight()}
+             * Аналогично со свпйпом вправо и {@link GameViewAdapter#transposeToRight()}
              *
              */
             @Override
@@ -317,10 +352,26 @@ public class GameView extends View {
                     mAdapter.swipeDown();
                 }else{
                     if(diffX > sence){
-                        mAdapter.swipeRight();
+                        switch (mControlChema){
+                            case MOVE_ON_SWIPE:
+                                mAdapter.moveFigureToRight();
+                                break;
+                            case MOVE_ON_TAP:
+                            default:
+                                mAdapter.transposeToRight();
+                                break;
+                        }
                     }
                     if(diffX < -sence){
-                        mAdapter.swipeLeft();
+                        switch (mControlChema){
+                            case MOVE_ON_SWIPE:
+                                mAdapter.moveFigureToLeft();
+                                break;
+                            case MOVE_ON_TAP:
+                            default:
+                                mAdapter.transposeToLeft();
+                                break;
+                        }
                     }
                 }
                 return true;
@@ -377,4 +428,5 @@ public class GameView extends View {
             typedArray.recycle();
         }
     }
+
 }

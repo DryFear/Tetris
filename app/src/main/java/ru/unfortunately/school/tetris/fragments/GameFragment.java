@@ -80,6 +80,17 @@ public class GameFragment extends Fragment
                 DEFAULT_DIFFICULT
 
         ));
+        int schema = 0;
+        String schemaValue = mPreferences.getString(getString(R.string.control_list_key_preference), "default");
+        switch (schemaValue){
+            case "move_on_swipe":
+                schema = 1;
+                break;
+            case "default":
+                schema = 0;
+                break;
+        }
+        mGameView.setControlChema(schema);
         mGameView.setAdapter(mGameAdapter);
     }
 

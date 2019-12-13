@@ -234,7 +234,7 @@ public class GameViewAdapter{
 
 
     //TODO: При свайпе фигуры могут наложиться друг на друга. Добавить проверку на возможность
-    public void swipeRight(){
+    public void transposeToRight(){
         mCurrentFigure.transposeToRight();
         int saveX = mCurrentPoint.x;
         while (touchCheck() || mCurrentPoint.x +
@@ -247,7 +247,7 @@ public class GameViewAdapter{
         }
     }
 
-    public void swipeLeft(){
+    public void transposeToLeft(){
         mCurrentFigure.transposeToLeft();
         int saveX = mCurrentPoint.x;
         while (touchCheck() || mCurrentPoint.x +

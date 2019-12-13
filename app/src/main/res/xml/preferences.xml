@@ -24,5 +24,17 @@
         app:entryValues="@array/color_values"
         app:defaultValue="default"/>
 
+    <ListPreference
+        app:key="@string/control_list_key_preference"
+        app:title="@string/control_list_title_preference"
+        app:summary="@string/control_list_summary_preference"
+        app:entries="@array/control_schema_titles"
+        app:entryValues="@array/control_schema_values"
+        app:defaultValue="default"/>
+
+    <Preference
+        app:key="@string/delete_records_key_preference"
+        app:title="@string/delete_records_title_preference"/>
+
 
 </PreferenceScreen>

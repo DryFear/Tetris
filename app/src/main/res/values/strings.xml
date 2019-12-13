@@ -17,6 +17,10 @@
     <string name="multi_select_summary_preference">Выберите цветовую палитру</string>
     <string name="color_list_summary_preference">Выберите цветовую палитру</string>
     <string name="color_list_title_preference">Цветовая палитра</string>
+    <string name="control_list_title_preference">Схема управления</string>
+    <string name="control_list_summary_preference">Выберите схему управления</string>
+
+    <string name="delete_records_title_preference">Удалить рекорды</string>
 
 
     <string-array name="color_titles">
@@ -24,6 +28,11 @@
         <item>Черно-белый</item>
         <item>Радужный</item>
         <item>Белый</item>
+    </string-array>
+
+    <string-array name="control_schema_titles">
+        <item>Перемещение на тап</item>
+        <item>Перемещение на свайп</item>
     </string-array>
 
 </resources>

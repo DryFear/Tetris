@@ -4,11 +4,18 @@
     <string name="difficult_key_preference">difficult_key_preference</string>
     <string name="multi_select_key_preference">multi_select_key_preference</string>
     <string name="color_list_key_preference">color_list_key_preference</string>
+    <string name="control_list_key_preference">control_list_key_preference</string>
+    <string name="delete_records_key_preference">delete_records_key_preference</string>
 
     <string-array name="color_values">
         <item>default</item>
         <item>black_white</item>
         <item>rainbow</item>
         <item>white</item>
+    </string-array>
+
+    <string-array name="control_schema_values">
+        <item>default</item>
+        <item>move_on_swipe</item>
     </string-array>
 </resources>
