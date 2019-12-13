@@ -18,15 +18,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
+import ru.unfortunately.school.tetris.IMainActivity;
+import ru.unfortunately.school.tetris.R;
+import ru.unfortunately.school.tetris.game.GameView;
+import ru.unfortunately.school.tetris.game.GameViewAdapter;
 import ru.unfortunately.school.tetris.game.listeners.FigureChangeListener;
 import ru.unfortunately.school.tetris.game.listeners.GameOverListener;
 import ru.unfortunately.school.tetris.game.listeners.SetScoreListener;
-import ru.unfortunately.school.tetris.game.GameView;
-import ru.unfortunately.school.tetris.game.GameViewAdapter;
-import ru.unfortunately.school.tetris.IMainActivity;
 import ru.unfortunately.school.tetris.models.FigureModel;
-import ru.unfortunately.school.tetris.models.Figures;
-import ru.unfortunately.school.tetris.R;
 
 public class GameFragment extends Fragment
         implements GameOverListener, SetScoreListener, FigureChangeListener {
@@ -94,7 +93,7 @@ public class GameFragment extends Fragment
         }else{
             throw new RuntimeException("Illegal instance if Activity");
         }
-        setUpPreference();
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
         setUpGameView();
         setUpButton();
     }
@@ -105,34 +104,6 @@ public class GameFragment extends Fragment
         mGameView.cancelAnimation();
     }
 
-    private void setUpPreference() {
-        mPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
-        String colorValue = mPreferences.getString(getResources().getString(R.string.color_list_key_preference), null);
-        if(colorValue == null) return;
-        String[] colorSetNames = getResources().getStringArray(R.array.color_values);
-        int[] colors;
-        switch (colorValue){
-            case "default":
-                colors = getResources().getIntArray(R.array.default_color_set);
-                Figures.setColors(colors);
-                break;
-            case "black_white":
-                colors = getResources().getIntArray(R.array.white_black_color_set);
-                Figures.setColors(colors);
-                break;
-            case "rainbow":
-                colors = getResources().getIntArray(R.array.rainbow_color_set);
-                Figures.setColors(colors);
-                break;
-            case "white":
-                colors = getResources().getIntArray(R.array.white_color_set);
-                Figures.setColors(colors);
-                break;
-            default:
-                throw new RuntimeException("Illegal color value");
-        }
-
-    }
 
     public GameViewAdapter getGameAdapter(){
         return mGameAdapter;

@@ -1,5 +1,6 @@
 package ru.unfortunately.school.tetris.fragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,9 +13,11 @@ import java.lang.ref.WeakReference;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 import ru.unfortunately.school.tetris.IMainActivity;
 import ru.unfortunately.school.tetris.R;
 import ru.unfortunately.school.tetris.background.BackgroundView;
+import ru.unfortunately.school.tetris.models.Figures;
 
 public class MainMenuFragment extends Fragment {
 
@@ -23,6 +26,7 @@ public class MainMenuFragment extends Fragment {
     private Button mToOptionsButton;
     private Button mToRecordsButton;
     private BackgroundView mBackgroundView;
+    private SharedPreferences mPreferences;
 
     public static MainMenuFragment newInstance() {
 
@@ -49,6 +53,7 @@ public class MainMenuFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main_menu, container, false);
         initViews(view);
         setUpButtons();
+        setUpPreference();
         return view;
     }
 
@@ -94,6 +99,34 @@ public class MainMenuFragment extends Fragment {
                 mMainActivityRef.get().toRecords();
             }
         });
+    }
+
+    private void setUpPreference() {
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
+        String colorValue = mPreferences.getString(getResources().getString(R.string.color_list_key_preference), null);
+        if(colorValue == null) return;
+        int[] colors;
+        switch (colorValue){
+            case "default":
+                colors = getResources().getIntArray(R.array.default_color_set);
+                Figures.setColors(colors);
+                break;
+            case "black_white":
+                colors = getResources().getIntArray(R.array.white_black_color_set);
+                Figures.setColors(colors);
+                break;
+            case "rainbow":
+                colors = getResources().getIntArray(R.array.rainbow_color_set);
+                Figures.setColors(colors);
+                break;
+            case "white":
+                colors = getResources().getIntArray(R.array.white_color_set);
+                Figures.setColors(colors);
+                break;
+            default:
+                throw new RuntimeException("Illegal color value");
+        }
+
     }
 
     private MainMenuFragment(){
