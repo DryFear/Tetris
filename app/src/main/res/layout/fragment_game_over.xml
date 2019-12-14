@@ -20,10 +20,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/restart"
+        android:padding="@dimen/small_padding"
+        android:background="@color/colorAccent"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textAlignment="center"
         android:layout_margin="@dimen/medium_margin"/>
-+
+
     <Button
         android:id="@+id/btn_exit"
         android:layout_width="match_parent"
@@ -31,6 +33,8 @@
         android:text="@string/exit"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textAlignment="center"
+        android:background="@color/colorAccent"
+        android:padding="@dimen/small_padding"
         android:layout_margin="@dimen/medium_margin"/>
 
 </LinearLayout>

@@ -3,7 +3,6 @@ package ru.unfortunately.school.tetris.game;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.graphics.Point;
-import android.util.Log;
 import android.view.animation.LinearInterpolator;
 
 import java.util.ArrayList;
@@ -18,16 +17,24 @@ import ru.unfortunately.school.tetris.models.FigureModel;
 import ru.unfortunately.school.tetris.models.Figures;
 import ru.unfortunately.school.tetris.models.GameRect;
 
+/**
+ * prod by Александр Воронин
+ */
+
+/**
+ * Адаптер для {@link GameView}
+ */
 
 public class GameViewAdapter{
+
+    private static final int FLAG_MOVE_TO_LEFT   = 0;
+    private static final int FLAG_MOVE_TO_RIGHT  = 1;
 
     private static final String TAG = "GameViewLogCatTag";
     private static final int MIN_SPEED = 1000;
     private boolean mGameRunningFlag = false;
     private GameView mGameView;
 
-    public static final int FLAG_MOVE_TO_LEFT   = 0;
-    public static final int FLAG_MOVE_TO_RIGHT  = 1;
 
     private FigureModel mCurrentFigure;
     private FigureModel mNextFigure;
@@ -43,6 +50,7 @@ public class GameViewAdapter{
     private GameOverListener mGameOverListener;
     private FigureChangeListener mFigureChangeListener;
 
+
     public GameViewAdapter(GameOverListener gameOverListener,
                            SetScoreListener scoreListener,
                            FigureChangeListener figureChangeListener){
@@ -51,7 +59,27 @@ public class GameViewAdapter{
         mFigureChangeListener = figureChangeListener;
     }
 
-    public void startGame(){
+    public void pauseGame(){
+        mAnimator.pause();
+    }
+
+    public void resumeGame(){
+        mAnimator.resume();
+    }
+
+    public void setGameSpeed(int gameSpeed) {
+        mGameSpeed = MIN_SPEED/gameSpeed;
+    }
+
+    void swipeDown() {
+        mIsBoost = true;
+    }
+
+    void cancelAnimation() {
+        mAnimator.cancel();
+    }
+
+    void startGame(){
         mDroppedRects = new LinkedList<>();
         mCurrentScore = 0;
         mScoreListener.setScore(mCurrentScore);
@@ -64,29 +92,66 @@ public class GameViewAdapter{
         startAnimation();
     }
 
-    public void setGameView(GameView gameView) {
+    void setGameView(GameView gameView) {
         mGameView = gameView;
     }
 
-    public void setGameSpeed(int gameSpeed) {
-        mGameSpeed = MIN_SPEED/gameSpeed;
+
+    void moveFigureToRight(){
+        if(mCurrentFigure.getShape()[FigureModel.X_INDEX] + mCurrentPoint.x < GameView.WIDTH_IN_BLOCKS - 1
+                && checkIfNearBlocks(FLAG_MOVE_TO_RIGHT)){
+            mCurrentPoint.x++;
+            sendRectsToView();
+        }
     }
 
+
+    void transposeToRight(){
+        mCurrentFigure.transposeToRight();
+        int saveX = mCurrentPoint.x;
+        while (touchCheck() || mCurrentPoint.x +
+                mCurrentFigure.getShape()[FigureModel.X_INDEX] > GameView.WIDTH_IN_BLOCKS - 1){
+            mCurrentPoint.x--;
+        }
+        if(mCurrentPoint.x < 0){
+            mCurrentFigure.transposeToLeft();
+            mCurrentPoint.x = saveX;
+        }
+    }
+
+    void transposeToLeft(){
+        mCurrentFigure.transposeToLeft();
+        int saveX = mCurrentPoint.x;
+        while (touchCheck() || mCurrentPoint.x +
+                mCurrentFigure.getShape()[FigureModel.X_INDEX] > GameView.WIDTH_IN_BLOCKS - 1){
+            mCurrentPoint.x--;
+        }
+        if(mCurrentPoint.x < 0){
+            mCurrentFigure.transposeToRight();
+            mCurrentPoint.x = saveX;
+        }
+    }
+
+    void moveFigureToLeft(){
+        if(mCurrentPoint.x > 0 && checkIfNearBlocks(FLAG_MOVE_TO_LEFT)){
+            mCurrentPoint.x--;
+            sendRectsToView();
+        }
+
+    }
 
     private void startAnimation(){
         mAnimator.addUpdateListener(new AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 if(mGameRunningFlag) {
-                    int value = (int) animation.getAnimatedValue();
-                    mCurrentPoint.y = value;
+                    mCurrentPoint.y = (int) animation.getAnimatedValue();
                     if (mIsBoost) {
                         mAnimator.pause();
                         boost();
                     }
                     if (touchCheck()) {
                         mAnimator.cancel();
-                        Log.i(TAG, "onAnimationUpdate: ");
                         onTouch();
                         mAnimator.start();
                     }
@@ -100,7 +165,6 @@ public class GameViewAdapter{
     private void boost(){
         while (!touchCheck()){
             mCurrentPoint.y++;
-            Log.i(TAG, "boost: " + mCurrentPoint.y);
         }
         mIsBoost = false;
     }
@@ -152,14 +216,10 @@ public class GameViewAdapter{
                 count++;
             }
         }
-        if(count == GameView.WIDTH_IN_BLOCKS){
-            return true;
-        }
-        return false;
+        return count == GameView.WIDTH_IN_BLOCKS;
     }
 
     private boolean touchCheck(){
-        //TODO: подумать как лучше заменить "-1"
         for (GameRect droppedRect : mDroppedRects) {
             List<GameRect> figureRects = mCurrentFigure.getRects();
             for (GameRect figureRect : figureRects) {
@@ -193,18 +253,7 @@ public class GameViewAdapter{
         mGameRunningFlag = false;
         mAnimator.pause();
         mAnimator.cancel();
-        if(mAnimator.isRunning()){
-            Log.i(TAG, "gameOver: ");
-        }
         mGameOverListener.onGameOver(mCurrentScore);
-    }
-
-    public void moveFigureToRight(){
-        if(mCurrentFigure.getShape()[FigureModel.X_INDEX] + mCurrentPoint.x < GameView.WIDTH_IN_BLOCKS - 1
-                    && !checkIfNearBlocks(FLAG_MOVE_TO_RIGHT)){
-            mCurrentPoint.x++;
-            sendRectsToView();
-        }
     }
 
     private boolean checkIfNearBlocks(int mode){
@@ -216,12 +265,12 @@ public class GameViewAdapter{
                 switch (mode){
                     case FLAG_MOVE_TO_LEFT:
                         if(figCoord.y == droppedCoord.y && figCoord.x - 1 == droppedCoord.x){
-                            return true;
+                            return false;
                         }
                         break;
                     case FLAG_MOVE_TO_RIGHT:
                         if(figCoord.y == droppedCoord.y && figCoord.x + 1 == droppedCoord.x){
-                            return true;
+                            return false;
                         }
                         break;
                     default: throw new RuntimeException("Unsupported flag");
@@ -229,58 +278,6 @@ public class GameViewAdapter{
             }
         }
 
-        return false;
-    }
-
-
-    //TODO: При свайпе фигуры могут наложиться друг на друга. Добавить проверку на возможность
-    public void transposeToRight(){
-        mCurrentFigure.transposeToRight();
-        int saveX = mCurrentPoint.x;
-        while (touchCheck() || mCurrentPoint.x +
-                mCurrentFigure.getShape()[FigureModel.X_INDEX] > GameView.WIDTH_IN_BLOCKS - 1){
-            mCurrentPoint.x--;
-        }
-        if(mCurrentPoint.x < 0){
-            mCurrentFigure.transposeToLeft();
-            mCurrentPoint.x = saveX;
-        }
-    }
-
-    public void transposeToLeft(){
-        mCurrentFigure.transposeToLeft();
-        int saveX = mCurrentPoint.x;
-        while (touchCheck() || mCurrentPoint.x +
-                mCurrentFigure.getShape()[FigureModel.X_INDEX] > GameView.WIDTH_IN_BLOCKS - 1){
-            mCurrentPoint.x--;
-        }
-        if(mCurrentPoint.x < 0){
-            mCurrentFigure.transposeToRight();
-            mCurrentPoint.x = saveX;
-        }
-    }
-
-    public void moveFigureToLeft(){
-        if(mCurrentPoint.x > 0 && !checkIfNearBlocks(FLAG_MOVE_TO_LEFT)){
-            mCurrentPoint.x--;
-            sendRectsToView();
-        }
-
-    }
-
-    public void pauseGame(){
-        mAnimator.pause();
-    }
-
-    public void resumeGame(){
-        mAnimator.resume();
-    }
-
-    public void swipeDown() {
-        mIsBoost = true;
-    }
-
-    public void cancelAnimation() {
-        mAnimator.cancel();
+        return true;
     }
 }

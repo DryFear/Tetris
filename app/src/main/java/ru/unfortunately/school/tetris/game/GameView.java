@@ -22,7 +22,7 @@ import ru.unfortunately.school.tetris.models.GameRect;
 import ru.unfortunately.school.tetris.R;
 
 /**
- * Prod by Unfortunately Still Alive (Александр Воронин)
+ * Prod by Александр Воронин
  */
 
 /**
@@ -222,11 +222,27 @@ public class GameView extends View {
             mGameHeight = height;
             mGameWidth  = (height - mBorderStroke*2)/2 + mBorderStroke*2;
         }else if(heightMode == MeasureSpec.UNSPECIFIED && widthMode == MeasureSpec.UNSPECIFIED){
-
+            mGameHeight = mDisplaySize.y;
+            mGameWidth = (mGameHeight - mBorderStroke*2)/2 + mBorderStroke*2;
         }else{
-            //TODO: Рассмотреть случай когда моды не равны
+            mGameHeight = measureSingle(height, heightMode);
+            mGameWidth = measureSingle(width, widthMode);
         }
         setMeasuredDimension(mGameWidth, mGameHeight);
+    }
+
+    /**
+     * Метод для отдельного measure сторон
+     */
+    private int measureSingle(int len, int mode) {
+        switch (mode) {
+            case MeasureSpec.EXACTLY:
+            case MeasureSpec.AT_MOST:
+                return len;
+            case MeasureSpec.UNSPECIFIED:
+            default:
+                return Math.max(mDisplaySize.x, mDisplaySize.y);
+        }
     }
 
 
@@ -347,11 +363,11 @@ public class GameView extends View {
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                 float diffX = e2.getX() - e1.getX();
                 float diffY = e2.getY() - e1.getY();
-                float sence = mSwipeSense * mBlockLength;
-                if(diffY > diffX && diffY > sence){
+                float sense = mSwipeSense * mBlockLength;
+                if(diffY > Math.abs(diffX) && diffY > sense){
                     mAdapter.swipeDown();
                 }else{
-                    if(diffX > sence){
+                    if(diffX > sense){
                         switch (mControlChema){
                             case MOVE_ON_SWIPE:
                                 mAdapter.moveFigureToRight();
@@ -362,7 +378,7 @@ public class GameView extends View {
                                 break;
                         }
                     }
-                    if(diffX < -sence){
+                    if(diffX < -sense){
                         switch (mControlChema){
                             case MOVE_ON_SWIPE:
                                 mAdapter.moveFigureToLeft();
