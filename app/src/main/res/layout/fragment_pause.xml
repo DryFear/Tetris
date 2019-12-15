@@ -11,7 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/pause"
+        android:textStyle="bold"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="@dimen/text_title"
         android:textAlignment="center"
         android:layout_margin="@dimen/medium_margin"/>
 

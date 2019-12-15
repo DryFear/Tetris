@@ -14,7 +14,7 @@
         app:summary="@string/difficult_summary_preference"
         app:min="1"
         android:max="10"
-        app:defaultValue="true"/>
+        app:defaultValue="1"/>
 
     <ListPreference
         app:key="@string/color_list_key_preference"

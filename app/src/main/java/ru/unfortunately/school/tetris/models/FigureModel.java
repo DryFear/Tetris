@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Point;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,9 +78,6 @@ public class FigureModel {
         int centerY = width/2;
         int startX = (int) (centerX - rectLen * ((figure.getShape()[X_INDEX] + 1)/2.0)) + 6;
         int startY = (int) (centerY - rectLen * ((figure.getShape()[Y_INDEX] + 2)/2.0)) + 6;
-        Log.i("TEST", "getBitmap: " + height);
-        Log.i("TEST", "getBitmap: " + centerX);
-        Log.i("TEST", "getBitmap: " + startX);
         canvas.translate(startX, startY);
         paint.setStrokeWidth(rectLen/6);
 

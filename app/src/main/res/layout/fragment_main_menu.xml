@@ -26,40 +26,18 @@
 
         <Button
             android:id="@+id/btn_start_game"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="@dimen/medium_margin"
             android:text="@string/start_game"
-            android:padding="@dimen/small_padding"
-            android:background="@color/colorAccent"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            tools:layout_editor_absoluteX="159dp"
-            tools:layout_editor_absoluteY="155dp" />
+            style="@style/MenuButtonStyle" />
 
         <Button
             android:id="@+id/btn_options"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="@dimen/medium_margin"
             android:text="@string/options"
-            android:background="@color/colorAccent"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            tools:layout_editor_absoluteX="159dp"
-            tools:layout_editor_absoluteY="155dp" />
+            style="@style/MenuButtonStyle"/>
 
         <Button
             android:id="@+id/btn_records"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="@dimen/medium_margin"
-            android:background="@color/colorAccent"
             android:text="@string/records"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            tools:layout_editor_absoluteX="159dp"
-            tools:layout_editor_absoluteY="155dp" />
+            style="@style/MenuButtonStyle"/>
 
     </LinearLayout>
 

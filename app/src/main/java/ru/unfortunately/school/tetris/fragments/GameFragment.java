@@ -44,7 +44,7 @@ public class GameFragment extends Fragment
     private GameViewAdapter mGameAdapter;
     private TextView mScoreView;
     private SharedPreferences mPreferences;
-    private static final int DEFAULT_DIFFICULT = 2000;
+    private static final int DEFAULT_DIFFICULT = 1;
 
     private int mNextFigureWidth = 0;
     private int mNextFigureHeight = 0;
@@ -160,7 +160,7 @@ public class GameFragment extends Fragment
         mNextFigureImageView.setImageBitmap(bitmap);
     }
 
-    class DatabaseInserter extends AsyncTask<Record, Void, Void>{
+    static class DatabaseInserter extends AsyncTask<Record, Void, Void>{
 
         private WeakReference<Context> mContextRef;
 

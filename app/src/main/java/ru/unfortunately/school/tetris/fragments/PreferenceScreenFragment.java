@@ -71,11 +71,11 @@ public class PreferenceScreenFragment extends PreferenceFragmentCompat {
         }
     }
 
-    class DatabaseDeleter extends AsyncTask<Void, Void, Void> {
+    static class DatabaseDeleter extends AsyncTask<Void, Void, Void> {
 
         private WeakReference<Context> mContextRef;
 
-        public DatabaseDeleter(Context context) {
+        DatabaseDeleter(Context context) {
             mContextRef = new WeakReference<>(context);
         }
 

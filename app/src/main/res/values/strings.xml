@@ -21,6 +21,8 @@
     <string name="control_list_summary_preference">Выберите схему управления</string>
 
     <string name="delete_records_title_preference">Удалить рекорды</string>
+    <string name="title_frame_records">Рекорды:</string>
+    <string name="no_available_records">Извините, но пока нет записей о играх</string>
 
 
     <string-array name="color_titles">

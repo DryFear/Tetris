@@ -23,21 +23,61 @@ import ru.unfortunately.school.tetris.models.GameRect;
 
 /**
  * Адаптер для {@link GameView}
+ *
+ * Просчитывает всю логику фигур на поле, и при изменении на поле переводит
+ * все поле в блоки {@link GameRect} и передает View {@link GameView}
+ *
  */
 
 public class GameViewAdapter{
 
+    /**
+     * Константы, которые нужны для обработки перемещения фигур влево и вправо
+     * См. {@link GameViewAdapter#moveFigureToLeft()} и {@link GameViewAdapter#moveFigureToRight()}
+     *
+     * Сделаны для обобщения передвижения через одну функцию в {@link GameViewAdapter#checkIfNearBlocks(int)}
+     */
     private static final int FLAG_MOVE_TO_LEFT   = 0;
     private static final int FLAG_MOVE_TO_RIGHT  = 1;
 
-    private static final String TAG = "GameViewLogCatTag";
+    /**
+     * Чтобы можно было задавать скорость игры числами от 1 до 9, существует эта константа
+     * Используется в {@link GameViewAdapter#setGameSpeed(int)}
+     *
+     * Скорость игры - длительность анимации падения фигуры вниз
+     * Скорость игры {@link GameViewAdapter#mGameSpeed} расчитывается по формуле MIN_SPEED/n,
+     * где n - число от 1 до 9, задающая уровень сложности.
+     *
+     * Получается заабавно: чем больше эта скорость игры, тем медленнее падают фигуры
+     */
     private static final int MIN_SPEED = 1000;
+
+    /**
+     * Флаг, показывающий - идет игра или нет. Нужен чтобы аниматор {@link GameViewAdapter#mAnimator}
+     * не просчитывал падение фигуры, если игра не продолжается
+     */
     private boolean mGameRunningFlag = false;
+
+    /**
+     * GameView {@link GameView}, за которой закреплен данный адаптер.
+     */
     private GameView mGameView;
 
-
+    /**
+     * mCurrentFigure - Фигура {@link FigureModel}, которая падает в данный момент времени.
+     * При ее приземлении она делится на блоки {@link GameRect},
+     * и в эту переменную записывается новая фигура в методе {@link GameViewAdapter#setNewRandomFigure(boolean)},
+     * которая до этого хранится в mNextFigure
+     *
+     * mNextFigure - фигура, которая появится после преземления текущей. При приземлении текущей
+     * в эту переменную записывается случайная фигура из списка фигур {@link Figures#getAllFigures()}
+     *
+     */
     private FigureModel mCurrentFigure;
     private FigureModel mNextFigure;
+
+
+
     private Point mCurrentPoint;
     private List<GameRect> mDroppedRects;
     private int mGameSpeed;

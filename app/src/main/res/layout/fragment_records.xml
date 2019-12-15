@@ -5,6 +5,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/medium_margin"
+        android:background="@drawable/background_line_corners"
+        android:padding="@dimen/small_padding"
+        android:text="@string/title_frame_records"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textAlignment="center"
+        android:textSize="48sp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/medium_margin"
+        android:padding="@dimen/small_padding"
+        android:text="@string/no_available_records"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textAlignment="center"
+        android:textSize="24sp"/>
+
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_records"
         android:layout_width="match_parent"
