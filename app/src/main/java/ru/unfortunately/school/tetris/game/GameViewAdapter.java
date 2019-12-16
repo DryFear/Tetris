@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import androidx.annotation.Nullable;
 import ru.unfortunately.school.tetris.game.listeners.FigureChangeListener;
 import ru.unfortunately.school.tetris.game.listeners.GameOverListener;
 import ru.unfortunately.school.tetris.game.listeners.SetScoreListener;
@@ -19,9 +20,7 @@ import ru.unfortunately.school.tetris.models.GameRect;
 
 /**
  * prod by Александр Воронин
- */
-
-/**
+ *
  * Адаптер для {@link GameView}
  *
  * Просчитывает всю логику фигур на поле, и при изменении на поле переводит
@@ -39,6 +38,11 @@ public class GameViewAdapter{
      */
     private static final int FLAG_MOVE_TO_LEFT   = 0;
     private static final int FLAG_MOVE_TO_RIGHT  = 1;
+
+    /**
+     * При удалении ряда к игровому счету {@link #mCurrentScore} будет добавляться это значение
+     */
+    private final static int SCORE_STEP = 10;
 
     /**
      * Чтобы можно было задавать скорость игры числами от 1 до 9, существует эта константа
@@ -72,45 +76,104 @@ public class GameViewAdapter{
      * mNextFigure - фигура, которая появится после преземления текущей. При приземлении текущей
      * в эту переменную записывается случайная фигура из списка фигур {@link Figures#getAllFigures()}
      *
+     * В целом нужна только для отображения следующей фигуры на экране.
+     * При установке новой mNextFigure, она посылается в {@link ru.unfortunately.school.tetris.fragments.GameFragment}
+     * через листенер {@link GameViewAdapter#mFigureChangeListener}
      */
     private FigureModel mCurrentFigure;
     private FigureModel mNextFigure;
 
-
-
+    /**
+     * Координаты текущей фигуры {@link GameViewAdapter#mCurrentFigure}
+     *
+     * Координаты храняться не в пикселях, а в размерах блоков.
+     * Т.е. нижняя правая точка по этим координатам равна (9, 19)
+     * Это сделано, чтобы адаптер не зависел от размеров GameView
+     */
     private Point mCurrentPoint;
+
+    /**
+     * Упавшие блоки {@link GameRect}, которые уже нельзя двигать.
+     */
     private List<GameRect> mDroppedRects;
+
+    /**
+     * Скорость анимации {@link #mAnimator} падения фигуры {@link #mCurrentFigure}
+     */
     private int mGameSpeed;
+
+    /**
+     * Аниматор, отвечающий за падение фигуры
+     */
     private ValueAnimator mAnimator;
+
+    /**
+     * Флаг, который переключается, если игрок свайпнул вниз
+     * Если этот флаг true, то текущая итерация анимации {@link #mAnimator}
+     * Завершится моментально в методе {@link #boost()}
+     * После этого метода этот флаг возвращается к значению false
+     */
     private boolean mIsBoost = false;
 
-    private final static int SCORE_STEP = 10;
+    /**
+     * Текущий счет. Изменятеся только в {@link #deleteRows()}
+     * Увеличивается на {@link #SCORE_STEP} за каждый удаленный ряд
+     * После изменения посылает результат во фрагмент {@link ru.unfortunately.school.tetris.fragments.GameFragment}
+     * через листенер {@link #mScoreListener}
+     */
     private int mCurrentScore;
+
+    /**
+     * Листенеры для взаимодействия с фрагментом {@link ru.unfortunately.school.tetris.fragments.GameFragment}
+     *
+     * mScoreListener - посылает счет для обновления количества очков на экране
+     *
+     * mGameOverListener - посылает сигнал о том, что игра окончена
+     *
+     * mFigureChangeListener - посылает {@link #mNextFigure} при ее изменении для отображения ее на экране
+     */
     private SetScoreListener mScoreListener;
     private GameOverListener mGameOverListener;
     private FigureChangeListener mFigureChangeListener;
 
 
-    public GameViewAdapter(GameOverListener gameOverListener,
-                           SetScoreListener scoreListener,
-                           FigureChangeListener figureChangeListener){
+
+    public GameViewAdapter(@Nullable GameOverListener gameOverListener,
+                           @Nullable SetScoreListener scoreListener,
+                           @Nullable FigureChangeListener figureChangeListener){
         mGameOverListener = gameOverListener;
         mScoreListener = scoreListener;
         mFigureChangeListener = figureChangeListener;
     }
 
+    /**
+     * Метод для приостановки анимации в {@link #mAnimator}
+     */
     public void pauseGame(){
         mAnimator.pause();
     }
 
+    /**
+     * Метод для возобновления анимации в {@link #mAnimator}
+     */
     public void resumeGame(){
         mAnimator.resume();
     }
 
+    /**
+     * Метод для задания скорости падения {@link #mCurrentFigure}
+     * @param gameSpeed - число от 1 до 9
+     */
     public void setGameSpeed(int gameSpeed) {
         mGameSpeed = MIN_SPEED/gameSpeed;
     }
 
+    /**
+     * Метод для разового ускоренного падения {@link #mCurrentFigure}
+     * При вызове его в {@link GameView} заставляет аниматору вызвать метод {@link #boost()}
+     *
+     * См. {@link #mIsBoost}
+     */
     void swipeDown() {
         mIsBoost = true;
     }

@@ -25,6 +25,7 @@ import ru.unfortunately.school.tetris.room.RecordsDatabase;
 public class RecordsFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
+    private View mNoRecordsTextView;
 
     public static RecordsFragment newInstance() {
 
@@ -40,6 +41,7 @@ public class RecordsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_records, container, false);
         mRecyclerView = view.findViewById(R.id.recycler_records);
+        mNoRecordsTextView = view.findViewById(R.id.text_view_no_records);
         DownloaderFromDatabase downloader = new DownloaderFromDatabase(requireContext());
         downloader.execute();
         return view;
@@ -47,6 +49,9 @@ public class RecordsFragment extends Fragment {
 
     private void setUpRecyclerView(List<Record> records) {
         RecordListAdapter adapter = new RecordListAdapter(records);
+        if(records.size() > 0){
+            mNoRecordsTextView.setVisibility(View.GONE);
+        }
         mRecyclerView.setAdapter(adapter);
     }
 

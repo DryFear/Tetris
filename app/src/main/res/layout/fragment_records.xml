@@ -17,6 +17,7 @@
         android:textSize="48sp"/>
 
     <TextView
+        android:id="@+id/text_view_no_records"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/medium_margin"
