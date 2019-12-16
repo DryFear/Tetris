@@ -9,7 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/medium_margin"
-        android:background="@drawable/background_line_corners"
         android:padding="@dimen/small_padding"
         android:text="@string/title_frame_records"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"

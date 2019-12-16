@@ -98,6 +98,12 @@ public class GameViewAdapter{
     private List<GameRect> mDroppedRects;
 
     /**
+     * Блоки для удаления.
+     */
+
+    private List<GameView> mRectsToDelete = new ArrayList<>();
+
+    /**
      * Скорость анимации {@link #mAnimator} падения фигуры {@link #mCurrentFigure}
      */
     private int mGameSpeed;
@@ -299,6 +305,7 @@ public class GameViewAdapter{
                 for (GameRect droppedRect : tempList) {
                     int y = droppedRect.getCoordinate().y;
                     if(y == i){
+
                         mDroppedRects.remove(droppedRect);
                     }
                     if(y < i){
